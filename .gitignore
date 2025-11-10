@@ -1,1 +1,26 @@
+# Virtual environments
 venv/
+venv312/
+analysis/realtime/PayannamehSkyMind-Dashboardvenv312/
+__pycache__/
+*.pyc
+*.exe*
+*.dll*
+
+# Large model/data/results
+models/New folder*/
+models/New folder (2)/
+results/New folder*/
+results/*.npz
+results/*.png
+
+# Local docs & logs
+*.docx
+*.pdf
+*.txt
+*.log
+*.pkl
+
+# Auto-generated reports
+analysis/realtime/auto_reports/
+analysis/realtime/realtime_cache.pkl
