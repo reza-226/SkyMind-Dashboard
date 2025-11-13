@@ -1,0 +1,20 @@
+{
+  "type": "<class 'dict'>",
+  "keys": [
+    "mean_U",
+    "mean_Delta",
+    "mean_Omega",
+    "mean_Energy_J",
+    "mean_Delay_ms",
+    "mean_Energy_Reduction_%",
+    "mean_Delay_Reduction_%",
+    "episodes",
+    "duration_sec",
+    "timestamp",
+    "U_history",
+    "Delta_history",
+    "Omega_history",
+    "Energy_history",
+    "Delay_history"
+  ]
+}

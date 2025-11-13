@@ -1,5 +1,5 @@
 # =====================================================
-# core/env_multi.py  (FINAL - SkyMind/UTPTR grounded)
+# core/env_multi.py  (FIXED - Normalized Rewards)
 # =====================================================
 import numpy as np
 
@@ -7,6 +7,8 @@ class MultiUAVEnv:
     """
     Multi-UAV Environment modeled after SkyMind thesis (Malek Ashtar Univ.)
     and UTPTR stochastic game (IEEE Access 2024–25).
+    
+    FIXED: Added reward normalization to prevent exploding values.
     """
 
     def __init__(self,
@@ -19,8 +21,9 @@ class MultiUAVEnv:
                  bandwidth=1e6,
                  noise_power=1e-10,
                  alpha_delay=1.0,
-                 beta_energy=1e-6,
-                 gamma_eff=1e3):
+                 beta_energy=1.0,      # ← Changed from 1e-6
+                 gamma_eff=1.0,        # ← Changed from 1e3
+                 reward_scale=0.01):   # ← NEW: scaling factor
         self.n_agents = n_agents
         self.n_users = n_users
         self.dt = dt
@@ -32,6 +35,13 @@ class MultiUAVEnv:
         self.alpha = alpha_delay
         self.beta = beta_energy
         self.gamma = gamma_eff
+        self.reward_scale = reward_scale
+        
+        # ← NEW: For running statistics
+        self.reward_mean = 0.0
+        self.reward_std = 1.0
+        self.reward_history = []
+        
         self.reset()
 
     # --------------------------------------------------
@@ -72,6 +82,27 @@ class MultiUAVEnv:
             "energy": energies,
             "distances": distances
         }
+
+    # --------------------------------------------------
+    def _normalize_reward(self, reward):
+        """
+        Normalize reward using running statistics.
+        Similar to PPO/SAC implementations.
+        """
+        self.reward_history.append(reward)
+        
+        # Update running mean/std every 100 steps
+        if len(self.reward_history) >= 100:
+            self.reward_mean = np.mean(self.reward_history[-1000:])
+            self.reward_std = np.std(self.reward_history[-1000:]) + 1e-8
+        
+        # Standardize
+        normalized = (reward - self.reward_mean) / self.reward_std
+        
+        # Clip to reasonable range
+        normalized = np.clip(normalized, -10, 10)
+        
+        return normalized * self.reward_scale
 
     # --------------------------------------------------
     def step(self, actions):
@@ -123,17 +154,26 @@ class MultiUAVEnv:
             total_data += data_proc
             E_eff = data_proc / E_unit if E_unit > 0 else 0
 
-            # --- Reward (Eq.27a style)
-            rewards[i] = -(self.alpha * D_total + self.beta * E_unit) + self.gamma * E_eff
+            # --- Raw Reward (before normalization)
+            # Normalize delay and energy to similar scales
+            D_norm = D_total / 1e-3  # typical delay ~ ms
+            E_norm = E_unit / 1e3    # typical energy ~ kJ
+            E_eff_norm = E_eff / 1e3 # typical efficiency
+            
+            raw_reward = -(self.alpha * D_norm + self.beta * E_norm) + self.gamma * E_eff_norm
+            
+            # ← NEW: Apply normalization
+            rewards[i] = self._normalize_reward(raw_reward)
 
         # --- Collect info dictionary for logging
         info = {
             "delays": delays,
             "mean_delay": np.mean(delays),
-            "energy_total": energy_total,   # ← scientific + code-matched key
+            "energy_total": energy_total,
             "delay_total": total_delay,
             "total_data": total_data,
-            "E_eff_global": (total_data / energy_total) if energy_total > 0 else 0.0
+            "E_eff_global": (total_data / energy_total) if energy_total > 0 else 0.0,
+            "raw_rewards": rewards.copy()  # ← Store for analysis
         }
         return self._get_state_dict(), rewards, False, info
 
@@ -143,5 +183,4 @@ class MultiUAVEnv:
         obs_next, rewards, done, info = self.step(actions)
         next_states = [obs_next for _ in range(self.n_agents)]
         done_flags = [done] * self.n_agents
-        # Return a single dict, not list, matching train_multi expectations
         return next_states, rewards, done_flags, info

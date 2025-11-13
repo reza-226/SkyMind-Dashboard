@@ -3,12 +3,15 @@
 # Description: SkyMind Scientific Dashboard – v6.4 Final UI
 # Grounded on structure found in project_structure.txt (165k lines)
 # ---------------------------------------------------------
-
-from dash import Dash, dcc, html
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))  # مسیر پایه پروژه
+import dash
 from flask import Flask
+from dash import Dash, html, dcc, Input, Output, callback
 from flask_socketio import SocketIO
 import pandas as pd
 import plotly.express as px
+import webbrowser
 
 # مسیرهای داخلی بر اساس ساختار واقعی پروژه
 from dashboard.layouts import (
@@ -102,4 +105,6 @@ def handle_disconnect():
 if __name__ == "__main__":
     print("🚀 Starting SkyMind Scientific Dashboard Server ...")
     print("🔗 Visit: http://127.0.0.1:8050/")
-    socketio.run(server, host="0.0.0.0", port=8050, debug=True)
+if __name__ == "__main__":
+    app.run_server(debug=True)
+

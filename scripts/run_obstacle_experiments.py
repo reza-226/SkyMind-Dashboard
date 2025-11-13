@@ -18,7 +18,7 @@ from typing import Dict, List
 import argparse
 
 from core.env_multi import MultiUAVEnvironment
-from agents.agent_maddpg_multi import MADDPGAgent
+from agents.agent_maddpg_multi import MADDPG_Agent
 from agents.dqn import DQNAgent
 from agents.bls import BLSAgent
 from agents.ga import GAAgent

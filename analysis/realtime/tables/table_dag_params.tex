@@ -1,0 +1,26 @@
+\begin{table}[h]
+\centering
+\caption{مشخصات وظایف (DAG Tasks)}
+\label{tab:dag_params}
+\begin{tabular}{|c|c|c|p{5cm}|}
+\hline
+\textbf{پارامتر} & \textbf{مقدار} & \textbf{واحد} & \textbf{توضیح} \\
+\hline
+تعداد وظایف در DAG & 5-15 & tasks & تعداد subtasks در یک DAG \\
+\hline
+حجم داده ورودی & 0.5-5 & MB & حجم داده هر subtask \\
+\hline
+تعداد CPU cycles & 100-1000 & Mega cycles & پیچیدگی محاسباتی هر task \\
+\hline
+مدل وابستگی & DAG (Directed Acyclic Graph) & - & Sequential + Parallel dependencies \\
+\hline
+درجه موازی‌سازی & 2-4 & - & حداکثر tasks همزمان \\
+\hline
+Deadline constraint & 1-10 & ثانیه & محدودیت زمانی تکمیل DAG \\
+\hline
+نرخ ورود وظایف & Poisson($\lambda=0.5$) & tasks/sec & توزیع زمانی arrival \\
+\hline
+اولویت وظایف & Uniform[1,5] & - & سطوح اولویت QoS \\
+\hline
+\end{tabular}
+\end{table}

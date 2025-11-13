@@ -1,0 +1,26 @@
+{
+  "config": {
+    "n_uavs": 3,
+    "n_episodes": 10,
+    "complexity": "medium",
+    "timestamp": "20251112_201009",
+    "env_class": "MultiUAVEnv"
+  },
+  "results": {
+    "Random": {
+      "avg_reward": 0.0,
+      "avg_steps": 0.0,
+      "success_rate": 0.0
+    },
+    "Greedy": {
+      "avg_reward": 0.0,
+      "avg_steps": 0.0,
+      "success_rate": 0.0
+    },
+    "Obstacle-Aware": {
+      "avg_reward": 0.0,
+      "avg_steps": 0.0,
+      "success_rate": 0.0
+    }
+  }
+}

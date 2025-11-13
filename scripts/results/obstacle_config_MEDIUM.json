@@ -1,0 +1,13 @@
+{
+  "complexity": "MEDIUM",
+  "area_size": [
+    1000,
+    1000,
+    150
+  ],
+  "seed": null,
+  "n_static": 10,
+  "n_dynamic": 5,
+  "n_nfz": 3,
+  "density": 0.013572981523982314
+}

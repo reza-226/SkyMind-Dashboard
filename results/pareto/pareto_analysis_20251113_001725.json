@@ -1,0 +1,35 @@
+{
+  "timestamp": "20251113_001725",
+  "source_file": "20251113_001708",
+  "pareto_data": {
+    "random": {
+      "delay": 16.08072120459941,
+      "energy": 644002.7864546858
+    },
+    "greedy_local": {
+      "delay": 1.6933354482847147,
+      "energy": 675000.4894669311
+    },
+    "greedy_offload": {
+      "delay": 45.61903000151661,
+      "energy": 675000.2778447807
+    },
+    "balanced": {
+      "delay": 23.371852185050724,
+      "energy": 675000.3817048514
+    }
+  },
+  "pareto_optimal_policies": [
+    "random",
+    "greedy_local"
+  ],
+  "dominated_policies": [
+    "greedy_offload",
+    "balanced"
+  ],
+  "analysis": {
+    "n_total_policies": 4,
+    "n_pareto_optimal": 2,
+    "n_dominated": 2
+  }
+}

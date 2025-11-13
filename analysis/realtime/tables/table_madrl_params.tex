@@ -1,0 +1,48 @@
+\begin{table}[h]
+\centering
+\caption{Hyperparameters الگوریتم MADRL-GCN}
+\label{tab:madrl_params}
+\begin{tabular}{|c|c|c|p{5cm}|}
+\hline
+\textbf{پارامتر} & \textbf{مقدار} & \textbf{واحد} & \textbf{توضیح} \\
+\hline
+الگوریتم & MADDPG & - & Multi-Agent DDPG \\
+\hline
+تعداد Agents & 3 & - & یک agent برای هر UAV \\
+\hline
+معماری Actor & GCN + MLP & - & Graph Convolutional Network + Dense layers \\
+\hline
+معماری Critic & Centralized MLP & - & Shared critic با state/action تمام agents \\
+\hline
+لایه‌های GCN & 2 & layers & برای مدل‌سازی DAG dependencies \\
+\hline
+Hidden units (GCN) & 64 & neurons & تعداد نورون‌های مخفی GCN \\
+\hline
+Hidden units (MLP) & [128, 128] & neurons & لایه‌های fully-connected \\
+\hline
+Learning rate (Actor) & 0.0001 & - & نرخ یادگیری Actor network \\
+\hline
+Learning rate (Critic) & 0.001 & - & نرخ یادگیری Critic network \\
+\hline
+Discount factor ($\gamma$) & 0.99 & - & وزن rewards آینده \\
+\hline
+Batch size & 128 & samples & اندازه mini-batch برای training \\
+\hline
+Replay buffer size & 100000 & transitions & ظرفیت حافظه تجربه \\
+\hline
+Target network update ($\tau$) & 0.001 & - & نرخ soft update \\
+\hline
+Exploration strategy & OU Noise & - & Ornstein-Uhlenbeck process \\
+\hline
+Exploration decay & Linear: $1.0 \rightarrow 0.1$ & - & کاهش noise در طول training \\
+\hline
+تعداد Episodes & 2000 & episodes & تعداد کل episodes آموزش \\
+\hline
+Max steps per episode & 200 & steps & طول افق زمانی هر episode \\
+\hline
+Optimizer & Adam & - & الگوریتم بهینه‌سازی \\
+\hline
+Loss function & MSE (Critic), PG (Actor) & - & توابع هزینه \\
+\hline
+\end{tabular}
+\end{table}

@@ -1,0 +1,21 @@
+{
+  "n_agents": 3,
+  "n_users": 5,
+  "grid_size": 1000,
+  "n_episodes": 500,
+  "max_steps_per_episode": 100,
+  "batch_size": 64,
+  "buffer_capacity": 10000,
+  "state_dim": 38,
+  "action_dim": 4,
+  "lr": 0.001,
+  "gamma": 0.95,
+  "noise_scale": 0.1,
+  "noise_decay": 0.995,
+  "min_noise": 0.01,
+  "save_interval": 50,
+  "early_stop_threshold": -50,
+  "early_stop_patience": 100,
+  "results_dir": "./results/maddpg_training",
+  "models_dir": "./models/maddpg_training"
+}
