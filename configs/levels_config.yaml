@@ -1,0 +1,89 @@
+# configs/levels_config.yaml
+# کانفیگ آموزش چندسطحی MADDPG
+
+# پارامترهای مشترک
+common:
+  training:
+    max_episodes: 500
+    batch_size: 64
+    buffer_size: 100000
+    lr_actor: 0.0001
+    lr_critic: 0.001
+    gamma: 0.95
+    tau: 0.01
+    noise_std: 0.5
+    noise_decay: 0.995
+    min_noise: 0.01
+    save_interval: 50
+    update_freq: 5            # ✅ اضافه شد
+    updates_per_step: 5       # ✅ اضافه شد
+    min_buffer_size: 1000     # ✅ اضافه شد
+    log_interval: 10          # ✅ اضافه شد
+  
+  agents:
+    hidden_dim: 128
+    device: 'cpu'
+
+# سطح 1: ساده (بدون مانع)
+level1_simple:
+  name: "Level 1 - Simple (No Obstacles)"
+  env_name: "simple_tag_v3"
+  params:
+    num_good: 1
+    num_adversaries: 1
+    num_obstacles: 0
+    max_cycles: 25
+  
+  training:
+    max_episodes: 300
+  
+  output:
+    model_dir: "models/level1_simple"
+    log_file: "logs/level1_training.log"
+    results_file: "models/level1_simple/training_results.json"
+
+# سطح 2: متوسط (2 مانع)
+level2_medium:
+  name: "Level 2 - Medium (2 Obstacles)"
+  env_name: "simple_tag_v3"
+  params:
+    num_good: 1
+    num_adversaries: 1
+    num_obstacles: 2
+    max_cycles: 25
+  
+  training:
+    max_episodes: 500
+  
+  transfer_learning:
+    enabled: true
+    source_level: "level1_simple"
+    freeze_actor: false
+  
+  output:
+    model_dir: "models/level2_medium"
+    log_file: "logs/level2_training.log"
+    results_file: "models/level2_medium/training_results.json"
+
+# سطح 3: پیچیده (4 مانع)
+level3_complex:
+  name: "Level 3 - Complex (4 Obstacles)"
+  env_name: "simple_tag_v3"
+  params:
+    num_good: 1
+    num_adversaries: 1
+    num_obstacles: 4
+    max_cycles: 25
+  
+  training:
+    max_episodes: 800
+  
+  transfer_learning:
+    enabled: true
+    source_level: "level2_medium"
+    freeze_actor: false
+  
+  output:
+    model_dir: "models/level3_complex"
+    log_file: "logs/level3_training.log"
+    results_file: "models/level3_complex/training_results.json"

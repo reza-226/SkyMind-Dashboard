@@ -1,0 +1,547 @@
+# ═══════════════════════════════════════════════════════════════════════
+# dashboard_complete.py - نسخه نهایی با UI بهبود یافته
+# ═══════════════════════════════════════════════════════════════════════
+
+import dash
+from dash import dcc, html, dash_table, Input, Output, State
+from dash.exceptions import PreventUpdate
+import plotly.graph_objs as go
+import numpy as np
+import pandas as pd
+import os
+from collections import deque
+
+# ═══════════════════════════════════════════════════════════════════════
+# تنظیمات اولیه
+# ═══════════════════════════════════════════════════════════════════════
+RESULTS_DIR = 'results'
+MAX_DATA_POINTS = 30
+
+os.makedirs(RESULTS_DIR, exist_ok=True)
+
+# ═══════════════════════════════════════════════════════════════════════
+# تولید داده‌های نمونه
+# ═══════════════════════════════════════════════════════════════════════
+def generate_sample_data():
+    """تولید داده‌های شبیه‌سازی شده"""
+    n_episodes = 500
+    episodes = list(range(1, n_episodes + 1))
+    
+    rewards = []
+    utilities = []
+    energies = []
+    
+    for i in range(n_episodes):
+        base_reward = -100 + (i / n_episodes) * 150
+        reward = base_reward + np.random.normal(0, 10)
+        rewards.append(reward)
+        
+        base_utility = 0.3 + (i / n_episodes) * 0.6
+        utility = np.clip(base_utility + np.random.normal(0, 0.05), 0, 1)
+        utilities.append(utility)
+        
+        base_energy = 80 - (i / n_episodes) * 40
+        energy = np.clip(base_energy + np.random.normal(0, 5), 10, 100)
+        energies.append(energy)
+    
+    return {
+        'episodes': episodes,
+        'rewards': rewards,
+        'utilities': utilities,
+        'energies': energies
+    }
+
+sample_data = generate_sample_data()
+np.save(os.path.join(RESULTS_DIR, 'sample_training_results.npy'), sample_data)
+
+live_data_store = {
+    'episodes': deque(maxlen=30),
+    'utility': deque(maxlen=30),
+    'energy': deque(maxlen=30)
+}
+
+episode_counter = 0
+
+# ═══════════════════════════════════════════════════════════════════════
+# ایجاد برنامه Dash
+# ═══════════════════════════════════════════════════════════════════════
+app = dash.Dash(__name__)
+app.title = "داشبورد SkyMind"
+app.config.suppress_callback_exceptions = True
+
+# ═══════════════════════════════════════════════════════════════════════
+# استایل‌های سفارشی (تم تیره + فونت فارسی)
+# ═══════════════════════════════════════════════════════════════════════
+CARD_STYLE = {
+    'backgroundColor': '#1e2a38',
+    'padding': '25px',
+    'borderRadius': '12px',
+    'marginBottom': '20px',
+    'boxShadow': '0 4px 15px rgba(0,0,0,0.3)',
+    'border': '1px solid #2d3e50'
+}
+
+HEADER_STYLE = {
+    'color': '#00d4ff',
+    'marginBottom': '15px',
+    'fontFamily': 'Vazir, Tahoma, sans-serif',
+    'fontWeight': 'bold'
+}
+
+TEXT_STYLE = {
+    'color': '#e0e0e0',
+    'fontSize': '15px',
+    'lineHeight': '1.8',
+    'fontFamily': 'Vazir, Tahoma, sans-serif'
+}
+
+# ═══════════════════════════════════════════════════════════════════════
+# Layout اصلی
+# ═══════════════════════════════════════════════════════════════════════
+app.layout = html.Div([
+    # فونت فارسی
+    html.Link(
+        rel='stylesheet',
+        href='https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css'
+    ),
+    
+    # هدر
+    html.Div([
+        html.H1("🛸 داشبورد SkyMind", 
+                style={'textAlign': 'center', 'color': '#00d4ff', 'marginBottom': '10px',
+                       'fontFamily': 'Vazir, sans-serif', 'fontSize': '42px'}),
+        html.P("مانیتورینگ لحظه‌ای و نتایج آموزش", 
+               style={'textAlign': 'center', 'color': '#a0a0a0', 'fontSize': '18px',
+                      'fontFamily': 'Vazir, sans-serif'})
+    ], style={'padding': '30px', 'backgroundColor': '#0d1b2a', 'borderBottom': '3px solid #00d4ff'}),
+    
+    # Tabs
+    dcc.Tabs(id='tabs', value='tab-overview', children=[
+        dcc.Tab(label='📊 نمای کلی', value='tab-overview',
+                style={'backgroundColor': '#1e2a38', 'color': '#e0e0e0', 'fontFamily': 'Vazir'},
+                selected_style={'backgroundColor': '#00d4ff', 'color': '#0d1b2a', 'fontWeight': 'bold'}),
+        dcc.Tab(label='🤖 جزئیات عامل‌ها', value='tab-agents',
+                style={'backgroundColor': '#1e2a38', 'color': '#e0e0e0', 'fontFamily': 'Vazir'},
+                selected_style={'backgroundColor': '#00d4ff', 'color': '#0d1b2a', 'fontWeight': 'bold'}),
+        dcc.Tab(label='⚙️ پارامترهای آموزش', value='tab-hyperparams',
+                style={'backgroundColor': '#1e2a38', 'color': '#e0e0e0', 'fontFamily': 'Vazir'},
+                selected_style={'backgroundColor': '#00d4ff', 'color': '#0d1b2a', 'fontWeight': 'bold'}),
+        dcc.Tab(label='📈 نتایج آموزش', value='tab-results',
+                style={'backgroundColor': '#1e2a38', 'color': '#e0e0e0', 'fontFamily': 'Vazir'},
+                selected_style={'backgroundColor': '#00d4ff', 'color': '#0d1b2a', 'fontWeight': 'bold'}),
+        dcc.Tab(label='🔴 مانیتورینگ زنده', value='tab-live',
+                style={'backgroundColor': '#1e2a38', 'color': '#e0e0e0', 'fontFamily': 'Vazir'},
+                selected_style={'backgroundColor': '#00d4ff', 'color': '#0d1b2a', 'fontWeight': 'bold'})
+    ], style={'fontFamily': 'Vazir'}),
+    
+    html.Div(id='tabs-content', style={'padding': '25px', 'backgroundColor': '#0d1b2a', 'minHeight': '100vh'})
+], style={'backgroundColor': '#0d1b2a', 'fontFamily': 'Vazir'})
+
+# ═══════════════════════════════════════════════════════════════════════
+# Callback برای تغییر محتوای تب‌ها
+# ═══════════════════════════════════════════════════════════════════════
+@app.callback(
+    Output('tabs-content', 'children'),
+    Input('tabs', 'value')
+)
+def render_content(tab):
+    """تغییر محتوای تب‌ها"""
+    if tab == 'tab-overview':
+        return html.Div([
+            html.H3("📊 نمای کلی سیستم", style=HEADER_STYLE),
+            
+            html.Div([
+                html.Div([
+                    html.H4("🎯 هدف پروژه", style={'color': '#00ff88', 'fontFamily': 'Vazir'}),
+                    html.P("الگوریتم MADDPG (Multi-Agent Deep Deterministic Policy Gradient) برای بهینه‌سازی "
+                           "برون‌سپاری محاسبات با کمک پهپادها (UAV-assisted Computation Offloading)", 
+                           style=TEXT_STYLE),
+                    html.Hr(style={'borderColor': '#2d3e50'}),
+                    html.P("🔹 آموزش چند عامل هوشمند برای تصمیم‌گیری همزمان", style=TEXT_STYLE),
+                    html.P("🔹 بهینه‌سازی مصرف انرژی و تاخیر شبکه", style=TEXT_STYLE),
+                    html.P("🔹 استفاده از شبکه‌های Actor-Critic", style=TEXT_STYLE)
+                ], style=CARD_STYLE),
+                
+                html.Div([
+                    html.H4("📊 آمار سریع سیستم", style={'color': '#ff9500', 'fontFamily': 'Vazir'}),
+                    html.P(f"📁 مسیر ذخیره نتایج: {RESULTS_DIR}", style=TEXT_STYLE),
+                    html.P(f"📦 تعداد فایل‌های موجود: {len([f for f in os.listdir(RESULTS_DIR) if f.endswith('.npy')])}", 
+                           style=TEXT_STYLE),
+                    html.P(f"🔢 حداکثر نقاط داده: {MAX_DATA_POINTS}", style=TEXT_STYLE),
+                    html.P(f"⏱ پنجره نمایش زنده: 30 قدم", style=TEXT_STYLE)
+                ], style=CARD_STYLE),
+                
+                html.Div([
+                    html.H4("🛠 ویژگی‌های داشبورد", style={'color': '#00d4ff', 'fontFamily': 'Vazir'}),
+                    html.P("✅ نمایش لحظه‌ای عملکرد سیستم", style=TEXT_STYLE),
+                    html.P("✅ تحلیل نتایج آموزش با نمودارهای تعاملی", style=TEXT_STYLE),
+                    html.P("✅ مشاهده معماری شبکه‌های عصبی", style=TEXT_STYLE),
+                    html.P("✅ دکمه Pause/Resume برای کنترل مانیتورینگ", style=TEXT_STYLE)
+                ], style=CARD_STYLE)
+            ])
+        ])
+    
+    elif tab == 'tab-agents':
+        return html.Div([
+            html.H3("🤖 معماری عامل‌های هوشمند", style=HEADER_STYLE),
+            
+            html.Div([
+                html.H4("عامل 0: کنترل‌کننده پهپاد (UAV Controller)", 
+                        style={'color': '#00ff88', 'fontFamily': 'Vazir', 'marginBottom': '15px'}),
+                html.P("این عامل مسئول تصمیم‌گیری درباره حرکت پهپاد و تخصیص منابع محاسباتی است.", 
+                       style=TEXT_STYLE),
+                html.Hr(style={'borderColor': '#2d3e50', 'margin': '15px 0'}),
+                html.P("🔸 شبکه Actor:", style={'color': '#00d4ff', 'fontWeight': 'bold', 'fontFamily': 'Vazir'}),
+                html.P("ورودی [obs_dim] → لایه پنهان 128 نورون → لایه پنهان 64 نورون → خروجی [action_dim]", 
+                       style={**TEXT_STYLE, 'marginLeft': '20px'}),
+                html.P("تابع فعال‌سازی: ReLU در لایه‌های میانی، Tanh در خروجی", 
+                       style={**TEXT_STYLE, 'marginLeft': '20px', 'color': '#a0a0a0'}),
+                html.P("🔸 شبکه Critic:", style={'color': '#ff9500', 'fontWeight': 'bold', 'fontFamily': 'Vazir', 'marginTop': '10px'}),
+                html.P("ورودی [(obs+act) × n_agents] → 128 نورون → 64 نورون → خروجی Q-value (1)", 
+                       style={**TEXT_STYLE, 'marginLeft': '20px'}),
+                html.P("نقش: ارزیابی کیفیت اقدامات گرفته شده توسط تمام عامل‌ها", 
+                       style={**TEXT_STYLE, 'marginLeft': '20px', 'color': '#a0a0a0'})
+            ], style=CARD_STYLE),
+            
+            html.Div([
+                html.H4("عامل 1: مدیریت سرور لبه (Edge Server Manager)", 
+                        style={'color': '#00ff88', 'fontFamily': 'Vazir', 'marginBottom': '15px'}),
+                html.P("این عامل تصمیم می‌گیرد که کدام محاسبات را باید بر روی سرور لبه انجام دهد.", 
+                       style=TEXT_STYLE),
+                html.Hr(style={'borderColor': '#2d3e50', 'margin': '15px 0'}),
+                html.P("🔸 شبکه Actor:", style={'color': '#00d4ff', 'fontWeight': 'bold', 'fontFamily': 'Vazir'}),
+                html.P("ورودی [obs_dim] → 128 نورون → 64 نورون → [action_dim]", 
+                       style={**TEXT_STYLE, 'marginLeft': '20px'}),
+                html.P("🔸 شبکه Critic:", style={'color': '#ff9500', 'fontWeight': 'bold', 'fontFamily': 'Vazir', 'marginTop': '10px'}),
+                html.P("ورودی [(obs+act) × n_agents] → 128 نورون → 64 نورون → Q-value", 
+                       style={**TEXT_STYLE, 'marginLeft': '20px'}),
+                html.P("💡 نکته: هر دو عامل به صورت همزمان یاد می‌گیرند و تصمیمات هم‌افزا می‌گیرند", 
+                       style={**TEXT_STYLE, 'marginTop': '15px', 'color': '#ffd700', 'fontWeight': 'bold'})
+            ], style=CARD_STYLE)
+        ])
+    
+    elif tab == 'tab-hyperparams':
+        return html.Div([
+            html.H3("⚙️ پارامترهای آموزش", style=HEADER_STYLE),
+            
+            html.Div([
+                dash_table.DataTable(
+                    columns=[
+                        {'name': 'پارامتر', 'id': 'param'},
+                        {'name': 'مقدار', 'id': 'value'},
+                        {'name': 'توضیحات', 'id': 'desc'}
+                    ],
+                    data=[
+                        {'param': 'Learning Rate (Actor)', 'value': '0.0001', 
+                         'desc': 'نرخ یادگیری شبکه Actor (کند برای پایداری)'},
+                        {'param': 'Learning Rate (Critic)', 'value': '0.001', 
+                         'desc': 'نرخ یادگیری شبکه Critic (سریع‌تر از Actor)'},
+                        {'param': 'Gamma (Discount)', 'value': '0.95', 
+                         'desc': 'ضریب تخفیف برای محاسبه ارزش آینده'},
+                        {'param': 'Tau (Soft Update)', 'value': '0.01', 
+                         'desc': 'ضریب به‌روزرسانی نرم شبکه‌های هدف'},
+                        {'param': 'Batch Size', 'value': '64', 
+                         'desc': 'تعداد نمونه‌ها در هر مرحله آموزش'},
+                        {'param': 'Buffer Size', 'value': '100000', 
+                         'desc': 'ظرفیت Replay Buffer برای ذخیره تجربیات'},
+                        {'param': 'Max Episodes', 'value': '500', 
+                         'desc': 'تعداد کل اپیزودهای آموزش'}
+                    ],
+                    style_cell={
+                        'textAlign': 'right',
+                        'padding': '15px',
+                        'backgroundColor': '#1e2a38',
+                        'color': '#e0e0e0',
+                        'fontFamily': 'Vazir',
+                        'border': '1px solid #2d3e50'
+                    },
+                    style_header={
+                        'backgroundColor': '#00d4ff',
+                        'color': '#0d1b2a',
+                        'fontWeight': 'bold',
+                        'textAlign': 'center',
+                        'fontFamily': 'Vazir',
+                        'fontSize': '16px'
+                    },
+                    style_data_conditional=[
+                        {'if': {'row_index': 'odd'}, 'backgroundColor': '#253545'}
+                    ]
+                )
+            ], style=CARD_STYLE),
+            
+            html.Div([
+                html.H4("📚 توضیحات تکمیلی", style={'color': '#00ff88', 'fontFamily': 'Vazir'}),
+                html.P("🔹 الگوریتم MADDPG یک روش یادگیری تقویتی عمیق برای محیط‌های چند عامله است", 
+                       style=TEXT_STYLE),
+                html.P("🔹 از Experience Replay برای شکستن همبستگی داده‌ها استفاده می‌شود", 
+                       style=TEXT_STYLE),
+                html.P("🔹 Target Networks برای پایداری آموزش به کار می‌روند", 
+                       style=TEXT_STYLE)
+            ], style=CARD_STYLE)
+        ])
+    elif tab == 'tab-results':
+        return html.Div([
+            html.H3("📈 نتایج آموزش", style=HEADER_STYLE),
+            
+            html.Div([
+                html.Button('🔄 بارگذاری نتایج', id='load-button', n_clicks=0,
+                           style={'padding': '12px 30px', 'fontSize': '16px', 
+                                  'backgroundColor': '#00d4ff', 'color': '#0d1b2a',
+                                  'border': 'none', 'borderRadius': '8px', 
+                                  'cursor': 'pointer', 'fontWeight': 'bold',
+                                  'fontFamily': 'Vazir', 'marginBottom': '20px'}),
+                html.Div(id='results-output')
+            ])
+        ])
+    
+    elif tab == 'tab-live':
+        return html.Div([
+            html.H3("🔴 مانیتورینگ زنده", style=HEADER_STYLE),
+            
+            html.Div([
+                html.Button('▶️ شروع', id='start-button', n_clicks=0,
+                           style={'padding': '12px 25px', 'fontSize': '16px',
+                                  'backgroundColor': '#00ff88', 'color': '#0d1b2a',
+                                  'border': 'none', 'borderRadius': '8px',
+                                  'cursor': 'pointer', 'fontWeight': 'bold',
+                                  'fontFamily': 'Vazir', 'marginRight': '10px'}),
+                html.Button('⏸️ توقف', id='pause-button', n_clicks=0,
+                           style={'padding': '12px 25px', 'fontSize': '16px',
+                                  'backgroundColor': '#ff9500', 'color': '#0d1b2a',
+                                  'border': 'none', 'borderRadius': '8px',
+                                  'cursor': 'pointer', 'fontWeight': 'bold',
+                                  'fontFamily': 'Vazir'}),
+                html.Div(id='live-status', style={'marginTop': '15px', 'fontSize': '18px',
+                                                   'color': '#00d4ff', 'fontFamily': 'Vazir'})
+            ], style={'marginBottom': '25px'}),
+            
+            dcc.Interval(id='interval-component', interval=2000, n_intervals=0, disabled=True),
+            
+            html.Div([
+                html.Div([
+                    dcc.Graph(id='live-utility-graph', 
+                             config={'displayModeBar': False},
+                             style={'height': '350px'})
+                ], style=CARD_STYLE),
+                
+                html.Div([
+                    dcc.Graph(id='live-energy-graph',
+                             config={'displayModeBar': False},
+                             style={'height': '350px'})
+                ], style=CARD_STYLE)
+            ])
+        ])
+
+# ═══════════════════════════════════════════════════════════════════════
+# Callback: بارگذاری نتایج آموزش
+# ═══════════════════════════════════════════════════════════════════════
+@app.callback(
+    Output('results-output', 'children'),
+    Input('load-button', 'n_clicks')
+)
+def load_results(n_clicks):
+    """بارگذاری و نمایش نتایج آموزش"""
+    if n_clicks == 0:
+        raise PreventUpdate
+    
+    results_file = os.path.join(RESULTS_DIR, 'sample_training_results.npy')
+    
+    if not os.path.exists(results_file):
+        return html.Div("⚠️ فایل نتایج یافت نشد!", 
+                       style={'color': '#ff4444', 'fontSize': '18px', 'fontFamily': 'Vazir'})
+    
+    try:
+        data = np.load(results_file, allow_pickle=True).item()
+        episodes = data['episodes']
+        rewards = data['rewards']
+        utilities = data['utilities']
+        energies = data['energies']
+        
+        # نمودار پاداش
+        reward_fig = go.Figure()
+        reward_fig.add_trace(go.Scatter(
+            x=episodes, y=rewards,
+            mode='lines',
+            name='Reward',
+            line=dict(color='#00d4ff', width=2),
+            fill='tozeroy',
+            fillcolor='rgba(0, 212, 255, 0.2)'
+        ))
+        reward_fig.update_layout(
+            title='روند پاداش در طول آموزش',
+            xaxis_title='اپیزود',
+            yaxis_title='پاداش',
+            template='plotly_dark',
+            plot_bgcolor='#1e2a38',
+            paper_bgcolor='#1e2a38',
+            font=dict(family='Vazir', color='#e0e0e0'),
+            hovermode='x unified',
+            xaxis=dict(gridcolor='#2d3e50'),
+            yaxis=dict(gridcolor='#2d3e50')
+        )
+        
+        # نمودار کارایی
+        utility_fig = go.Figure()
+        utility_fig.add_trace(go.Scatter(
+            x=episodes, y=utilities,
+            mode='lines+markers',
+            name='Utility',
+            line=dict(color='#00ff88', width=2),
+            marker=dict(size=4)
+        ))
+        utility_fig.update_layout(
+            title='کارایی سیستم',
+            xaxis_title='اپیزود',
+            yaxis_title='کارایی (0-1)',
+            template='plotly_dark',
+            plot_bgcolor='#1e2a38',
+            paper_bgcolor='#1e2a38',
+            font=dict(family='Vazir', color='#e0e0e0'),
+            hovermode='x unified',
+            xaxis=dict(gridcolor='#2d3e50'),
+            yaxis=dict(gridcolor='#2d3e50', range=[0, 1])
+        )
+        
+        # نمودار انرژی
+        energy_fig = go.Figure()
+        energy_fig.add_trace(go.Scatter(
+            x=episodes, y=energies,
+            mode='lines',
+            name='Energy',
+            line=dict(color='#ff9500', width=2),
+            fill='tozeroy',
+            fillcolor='rgba(255, 149, 0, 0.2)'
+        ))
+        energy_fig.update_layout(
+            title='مصرف انرژی',
+            xaxis_title='اپیزود',
+            yaxis_title='انرژی (واحد)',
+            template='plotly_dark',
+            plot_bgcolor='#1e2a38',
+            paper_bgcolor='#1e2a38',
+            font=dict(family='Vazir', color='#e0e0e0'),
+            hovermode='x unified',
+            xaxis=dict(gridcolor='#2d3e50'),
+            yaxis=dict(gridcolor='#2d3e50')
+        )
+        
+        # آمار نهایی
+        final_stats = html.Div([
+            html.H4("📊 آمار نهایی", style={'color': '#00d4ff', 'fontFamily': 'Vazir'}),
+            html.P(f"🎯 میانگین پاداش: {np.mean(rewards[-50:]):.2f}", style=TEXT_STYLE),
+            html.P(f"⚡ میانگین کارایی: {np.mean(utilities[-50:]):.3f}", style=TEXT_STYLE),
+            html.P(f"🔋 میانگین انرژی: {np.mean(energies[-50:]):.2f}", style=TEXT_STYLE),
+            html.P(f"📈 بهبود پاداش: {((rewards[-1] - rewards[0]) / abs(rewards[0]) * 100):.1f}%", 
+                   style=TEXT_STYLE)
+        ], style=CARD_STYLE)
+        
+        return html.Div([
+            html.Div([dcc.Graph(figure=reward_fig)], style=CARD_STYLE),
+            html.Div([dcc.Graph(figure=utility_fig)], style=CARD_STYLE),
+            html.Div([dcc.Graph(figure=energy_fig)], style=CARD_STYLE),
+            final_stats
+        ])
+        
+    except Exception as e:
+        return html.Div(f"❌ خطا در بارگذاری: {str(e)}", 
+                       style={'color': '#ff4444', 'fontSize': '16px', 'fontFamily': 'Vazir'})
+
+# ═══════════════════════════════════════════════════════════════════════
+# Callback: کنترل مانیتورینگ زنده
+# ═══════════════════════════════════════════════════════════════════════
+@app.callback(
+    [Output('interval-component', 'disabled'),
+     Output('live-status', 'children')],
+    [Input('start-button', 'n_clicks'),
+     Input('pause-button', 'n_clicks')],
+    prevent_initial_call=True
+)
+def control_monitoring(start_clicks, pause_clicks):
+    """کنترل شروع/توقف مانیتورینگ"""
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        raise PreventUpdate
+    
+    button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+    
+    if button_id == 'start-button':
+        return False, "✅ مانیتورینگ فعال است..."
+    else:
+        return True, "⏸️ مانیتورینگ متوقف شد"
+
+# ═══════════════════════════════════════════════════════════════════════
+# Callback: به‌روزرسانی نمودارهای زنده
+# ═══════════════════════════════════════════════════════════════════════
+@app.callback(
+    [Output('live-utility-graph', 'figure'),
+     Output('live-energy-graph', 'figure')],
+    Input('interval-component', 'n_intervals')
+)
+def update_live_graphs(n):
+    """به‌روزرسانی نمودارهای زنده"""
+    global episode_counter, live_data_store
+    
+    episode_counter += 1
+    new_utility = np.clip(0.5 + 0.3 * np.sin(episode_counter / 5) + np.random.normal(0, 0.05), 0, 1)
+    new_energy = np.clip(50 + 20 * np.cos(episode_counter / 7) + np.random.normal(0, 3), 10, 100)
+    
+    live_data_store['episodes'].append(episode_counter)
+    live_data_store['utility'].append(new_utility)
+    live_data_store['energy'].append(new_energy)
+    
+    # نمودار کارایی زنده
+    utility_fig = go.Figure()
+    utility_fig.add_trace(go.Scatter(
+        x=list(live_data_store['episodes']),
+        y=list(live_data_store['utility']),
+        mode='lines+markers',
+        name='Utility',
+        line=dict(color='#00ff88', width=3),
+        marker=dict(size=6, color='#00ff88')
+    ))
+    utility_fig.update_layout(
+        title='کارایی زنده',
+        xaxis_title='قدم',
+        yaxis_title='کارایی',
+        template='plotly_dark',
+        plot_bgcolor='#1e2a38',
+        paper_bgcolor='#1e2a38',
+        font=dict(family='Vazir', color='#e0e0e0'),
+        xaxis=dict(gridcolor='#2d3e50', range=[max(1, episode_counter - 30), episode_counter]),
+        yaxis=dict(gridcolor='#2d3e50', range=[0, 1])
+    )
+    
+    # نمودار انرژی زنده
+    energy_fig = go.Figure()
+    energy_fig.add_trace(go.Scatter(
+        x=list(live_data_store['episodes']),
+        y=list(live_data_store['energy']),
+        mode='lines+markers',
+        name='Energy',
+        line=dict(color='#ff9500', width=3),
+        marker=dict(size=6, color='#ff9500')
+    ))
+    energy_fig.update_layout(
+        title='مصرف انرژی زنده',
+        xaxis_title='قدم',
+        yaxis_title='انرژی',
+        template='plotly_dark',
+        plot_bgcolor='#1e2a38',
+        paper_bgcolor='#1e2a38',
+        font=dict(family='Vazir', color='#e0e0e0'),
+        xaxis=dict(gridcolor='#2d3e50', range=[max(1, episode_counter - 30), episode_counter]),
+        yaxis=dict(gridcolor='#2d3e50')
+    )
+    
+    return utility_fig, energy_fig
+
+# ═══════════════════════════════════════════════════════════════════════
+# اجرای برنامه
+# ═══════════════════════════════════════════════════════════════════════
+if __name__ == '__main__':
+    print("\n" + "="*70)
+    print("🚀 داشبورد SkyMind در حال اجرا...")
+    print("🌐 آدرس: http://127.0.0.1:8050")
+    print("="*70 + "\n")
+    app.run_server(debug=True, host='127.0.0.1', port=8050)
+

@@ -1,874 +1,655 @@
-"""
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 داشبورد SkyMind - نسخه نهایی کامل (۷ تبی)
-مسیر: analysis/realtime/dashboard_complete.py
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-"""
+# ═══════════════════════════════════════════════════════════════════════
+# dashboard_complete.py - نسخه نهایی با UI بهبود یافته + جداول مقایسه‌ای
+# ═══════════════════════════════════════════════════════════════════════
 
 import dash
-from dash import dcc, html, Input, Output
+from dash import dcc, html, dash_table, Input, Output, State
+from dash.exceptions import PreventUpdate
 import plotly.graph_objs as go
-import pickle
-import json
 import numpy as np
+import pandas as pd
+import os
+import json
 from pathlib import Path
-import webbrowser
-from threading import Timer
+from collections import deque
 
 # ═══════════════════════════════════════════════════════════════════════
 # تنظیمات اولیه
 # ═══════════════════════════════════════════════════════════════════════
-BASE_DIR = Path(__file__).parent
-CACHE_FILE = BASE_DIR / "realtime_cache.pkl"
-PARETO_FILE = BASE_DIR / "pareto_snapshot.json"
+RESULTS_DIR = 'results'
+MAX_DATA_POINTS = 30
 
-app = dash.Dash(__name__, suppress_callback_exceptions=True)
-app.title = "SkyMind Dashboard"
+os.makedirs(RESULTS_DIR, exist_ok=True)
 
 # ═══════════════════════════════════════════════════════════════════════
-# بارگذاری داده‌ها
+# خواندن داده‌های آموزش (3 سطح)
 # ═══════════════════════════════════════════════════════════════════════
-def load_data():
-    """بارگذاری cache و pareto"""
-    try:
-        with open(CACHE_FILE, 'rb') as f:
-            cache = pickle.load(f)
-        print("✅ Cache بارگذاری شد")
-    except:
-        cache = {'results': {}, 'metrics': {}}
-        print("⚠️ Cache یافت نشد")
+def load_training_data():
+    """خواندن نتایج آموزش 3 سطح"""
+    levels_data = {}
+    level_paths = {
+        'Level 1 (Simple)': 'models/level1_simple/training_history.json',
+        'Level 2 (Medium)': 'models/level2_medium/training_history.json',
+        'Level 3 (Complex)': 'models/level3_complex/training_history.json'
+    }
     
-    try:
-        with open(PARETO_FILE, 'r') as f:
-            pareto = json.load(f)
-        print("✅ Pareto بارگذاری شد")
-    except:
-        pareto = {}
-        print("⚠️ Pareto یافت نشد")
+    for level_name, path in level_paths.items():
+        try:
+            with open(path, 'r') as f:
+                levels_data[level_name] = json.load(f)
+                print(f"✅ بارگذاری موفق: {level_name}")
+        except FileNotFoundError:
+            print(f"⚠️  فایل یافت نشد: {level_name}")
+            levels_data[level_name] = None
     
-    return cache, pareto
+    return levels_data
 
-cache, pareto = load_data()
+training_data = load_training_data()
 
 # ═══════════════════════════════════════════════════════════════════════
-# استایل‌ها
+# تولید داده‌های نمونه
 # ═══════════════════════════════════════════════════════════════════════
-COLORS = {
-    'background': '#0a0e27',
-    'card': '#1a1f3a',
-    'primary': '#00d4ff',
-    'secondary': '#ff6b9d',
-    'success': '#4ade80',
-    'warning': '#fbbf24',
-    'text': '#e2e8f0'
+def generate_sample_data():
+    """تولید داده‌های شبیه‌سازی شده"""
+    n_episodes = 500
+    episodes = list(range(1, n_episodes + 1))
+    
+    rewards = []
+    utilities = []
+    energies = []
+    
+    for i in range(n_episodes):
+        base_reward = -100 + (i / n_episodes) * 150
+        reward = base_reward + np.random.normal(0, 10)
+        rewards.append(reward)
+        
+        base_utility = 0.3 + (i / n_episodes) * 0.6
+        utility = np.clip(base_utility + np.random.normal(0, 0.05), 0, 1)
+        utilities.append(utility)
+        
+        base_energy = 80 - (i / n_episodes) * 40
+        energy = np.clip(base_energy + np.random.normal(0, 5), 10, 100)
+        energies.append(energy)
+    
+    return {
+        'episodes': episodes,
+        'rewards': rewards,
+        'utilities': utilities,
+        'energies': energies
+    }
+
+sample_data = generate_sample_data()
+np.save(os.path.join(RESULTS_DIR, 'sample_training_results.npy'), sample_data)
+
+live_data_store = {
+    'episodes': deque(maxlen=30),
+    'utility': deque(maxlen=30),
+    'energy': deque(maxlen=30)
 }
 
-DROPDOWN_STYLE = {
-    'backgroundColor': '#1a1f3a',
+episode_counter = 0
+
+# ═══════════════════════════════════════════════════════════════════════
+# ایجاد برنامه Dash
+# ═══════════════════════════════════════════════════════════════════════
+app = dash.Dash(__name__)
+app.title = "داشبورد SkyMind"
+app.config.suppress_callback_exceptions = True
+
+# ═══════════════════════════════════════════════════════════════════════
+# استایل‌های سفارشی (تم تیره + فونت فارسی)
+# ═══════════════════════════════════════════════════════════════════════
+CARD_STYLE = {
+    'backgroundColor': '#1e2a38',
+    'padding': '25px',
+    'borderRadius': '12px',
+    'marginBottom': '20px',
+    'boxShadow': '0 4px 15px rgba(0,0,0,0.3)',
+    'border': '1px solid #2d3e50'
+}
+
+HEADER_STYLE = {
     'color': '#00d4ff',
-    'border': '2px solid #00d4ff',
-    'borderRadius': '8px',
-    'fontSize': '1.1rem',
-    'padding': '10px'
+    'marginBottom': '15px',
+    'fontFamily': 'Vazirmatn, Tahoma, sans-serif',
+    'fontWeight': 'bold'
+}
+
+TEXT_STYLE = {
+    'color': '#e0e0e0',
+    'fontSize': '15px',
+    'lineHeight': '1.8',
+    'fontFamily': 'Vazirmatn, Tahoma, sans-serif'
 }
 
 # ═══════════════════════════════════════════════════════════════════════
-# استایل HTML
-# ═══════════════════════════════════════════════════════════════════════
-app.index_string = '''
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>SkyMind Dashboard</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Vazirmatn', 'IRANSans', sans-serif !important;
-            background: #0a0e27;
-            color: #e2e8f0;
-            direction: rtl;
-        }
-        
-        .card {
-            background: #1a1f3a;
-            border-radius: 16px;
-            padding: 30px;
-            margin: 20px;
-            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.1);
-            border: 1px solid #2a2f4a;
-        }
-        
-        .stat-box {
-            background: linear-gradient(135deg, #1a1f3a, #252a4a);
-            padding: 25px;
-            border-radius: 12px;
-            text-align: center;
-            border: 2px solid #00d4ff;
-            transition: all 0.3s;
-        }
-        
-        .stat-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 24px rgba(0, 212, 255, 0.3);
-        }
-        
-        .kpi-card {
-            background: linear-gradient(135deg, #1a1f3a, #2a2f4a);
-            padding: 30px;
-            border-radius: 16px;
-            border: 2px solid #00d4ff;
-            transition: all 0.3s;
-        }
-        
-        .kpi-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 15px 30px rgba(0, 212, 255, 0.4);
-        }
-        
-        .Select-control {
-            background-color: #1a1f3a !important;
-            border: 2px solid #00d4ff !important;
-        }
-        
-        .Select-menu-outer {
-            background-color: #1a1f3a !important;
-            border: 2px solid #00d4ff !important;
-        }
-        
-        .Select-option {
-            background-color: #1a1f3a !important;
-            color: #00d4ff !important;
-        }
-        
-        .Select-option:hover {
-            background-color: #00d4ff !important;
-            color: #000000 !important;
-        }
-        
-        .Select-value-label {
-            color: #00d4ff !important;
-        }
-    </style>
-    {%metas%}
-    {%favicon%}
-    {%css%}
-</head>
-<body>
-    {%app_entry%}
-    {%config%}
-    {%scripts%}
-    {%renderer%}
-</body>
-</html>
-'''
-
-# ═══════════════════════════════════════════════════════════════════════
-# لی‌اوت اصلی
+# Layout اصلی
 # ═══════════════════════════════════════════════════════════════════════
 app.layout = html.Div([
+    # فونت فارسی
+    html.Link(
+        rel='stylesheet',
+        href='https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css'
+    ),
+    
+    # هدر
     html.Div([
-        html.H1("🚁 SkyMind Dashboard", 
-                style={'textAlign': 'center', 'padding': '30px', 
-                       'background': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                       'margin': '0', 'borderRadius': '0 0 20px 20px'})
-    ]),
+        html.H1("🛸 داشبورد SkyMind", 
+                style={'textAlign': 'center', 'color': '#00d4ff', 'marginBottom': '10px',
+                       'fontFamily': 'Vazirmatn, sans-serif', 'fontSize': '42px'}),
+        html.P("مانیتورینگ لحظه‌ای و نتایج آموزش MADDPG", 
+               style={'textAlign': 'center', 'color': '#a0a0a0', 'fontSize': '18px',
+                      'fontFamily': 'Vazirmatn, sans-serif'})
+    ], style={'padding': '30px', 'backgroundColor': '#0d1b2a', 'borderBottom': '3px solid #00d4ff'}),
     
-    dcc.Tabs(id='tabs', value='tab-1', children=[
-        dcc.Tab(label='نمای کلی', value='tab-1', 
-                style={'backgroundColor': '#1a1f3a', 'color': '#00d4ff'},
-                selected_style={'backgroundColor': '#00d4ff', 'color': '#000'}),
-        dcc.Tab(label='مقایسه عملکرد', value='tab-2',
-                style={'backgroundColor': '#1a1f3a', 'color': '#00d4ff'},
-                selected_style={'backgroundColor': '#00d4ff', 'color': '#000'}),
-        dcc.Tab(label='شاخص‌های کلیدی', value='tab-3',
-                style={'backgroundColor': '#1a1f3a', 'color': '#00d4ff'},
-                selected_style={'backgroundColor': '#00d4ff', 'color': '#000'}),
-        dcc.Tab(label='آموزش', value='tab-4',
-                style={'backgroundColor': '#1a1f3a', 'color': '#00d4ff'},
-                selected_style={'backgroundColor': '#00d4ff', 'color': '#000'}),
-        dcc.Tab(label='مانیتورینگ لحظه‌ای', value='tab-5',
-                style={'backgroundColor': '#1a1f3a', 'color': '#00d4ff'},
-                selected_style={'backgroundColor': '#00d4ff', 'color': '#000'}),
-        dcc.Tab(label='مقایسه لایه‌ها', value='tab-6',
-                style={'backgroundColor': '#1a1f3a', 'color': '#00d4ff'},
-                selected_style={'backgroundColor': '#00d4ff', 'color': '#000'}),
-        dcc.Tab(label='گزارش', value='tab-7',
-                style={'backgroundColor': '#1a1f3a', 'color': '#00d4ff'},
-                selected_style={'backgroundColor': '#00d4ff', 'color': '#000'})
-    ]),
+    # Tabs
+    dcc.Tabs(id='tabs', value='tab-overview', children=[
+        dcc.Tab(label='📊 نمای کلی', value='tab-overview',
+                style={'backgroundColor': '#1e2a38', 'color': '#e0e0e0', 'fontFamily': 'Vazirmatn'},
+                selected_style={'backgroundColor': '#00d4ff', 'color': '#0d1b2a', 'fontWeight': 'bold'}),
+        dcc.Tab(label='🤖 جزئیات عامل‌ها', value='tab-agents',
+                style={'backgroundColor': '#1e2a38', 'color': '#e0e0e0', 'fontFamily': 'Vazirmatn'},
+                selected_style={'backgroundColor': '#00d4ff', 'color': '#0d1b2a', 'fontWeight': 'bold'}),
+        dcc.Tab(label='⚙️ پارامترهای آموزش', value='tab-hyperparams',
+                style={'backgroundColor': '#1e2a38', 'color': '#e0e0e0', 'fontFamily': 'Vazirmatn'},
+                selected_style={'backgroundColor': '#00d4ff', 'color': '#0d1b2a', 'fontWeight': 'bold'}),
+        dcc.Tab(label='📈 نتایج آموزش', value='tab-results',
+                style={'backgroundColor': '#1e2a38', 'color': '#e0e0e0', 'fontFamily': 'Vazirmatn'},
+                selected_style={'backgroundColor': '#00d4ff', 'color': '#0d1b2a', 'fontWeight': 'bold'}),
+        dcc.Tab(label='🔴 مانیتورینگ زنده', value='tab-live',
+                style={'backgroundColor': '#1e2a38', 'color': '#e0e0e0', 'fontFamily': 'Vazirmatn'},
+                selected_style={'backgroundColor': '#00d4ff', 'color': '#0d1b2a', 'fontWeight': 'bold'})
+    ], style={'fontFamily': 'Vazirmatn'}),
     
-    html.Div(id='tabs-content')
-])
+    html.Div(id='tabs-content', style={'padding': '25px', 'backgroundColor': '#0d1b2a', 'minHeight': '100vh'})
+], style={'backgroundColor': '#0d1b2a', 'fontFamily': 'Vazirmatn'})
 
-@app.callback(Output('tabs-content', 'children'), Input('tabs', 'value'))
+# ═══════════════════════════════════════════════════════════════════════
+# Callback برای تغییر محتوای تب‌ها
+# ═══════════════════════════════════════════════════════════════════════
+@app.callback(
+    Output('tabs-content', 'children'),
+    Input('tabs', 'value')
+)
 def render_content(tab):
-    if tab == 'tab-1':
-        return create_overview()
-    elif tab == 'tab-2':
-        return create_performance()
-    elif tab == 'tab-3':
-        return create_kpis()
-    elif tab == 'tab-4':
-        return create_training()
-    elif tab == 'tab-5':
-        return create_live_monitor()
-    elif tab == 'tab-6':
-        return create_layers_comparison()
-    elif tab == 'tab-7':
-        return create_reports()
-
-# ═══════════════════════════════════════════════════════════════════════
-# تب ۱: نمای کلی
-# ═══════════════════════════════════════════════════════════════════════
-def create_overview():
-    return html.Div([
-        html.Div([
-            html.H3("🎯 نمای کلی سیستم SkyMind", style={'textAlign': 'center', 'marginBottom': '30px'}),
+    """تغییر محتوای تب‌ها"""
+    if tab == 'tab-overview':
+        return html.Div([
+            html.H3("📊 نمای کلی سیستم", style=HEADER_STYLE),
             
             html.Div([
                 html.Div([
-                    html.H4("🤖 Agents", style={'color': COLORS['primary']}),
-                    html.H2("3", style={'color': COLORS['success'], 'marginTop': '10px'}),
-                    html.P("MADDPG", style={'color': '#95a5a6', 'fontSize': '0.9rem'})
-                ], className='stat-box'),
+                    html.H4("🎯 هدف پروژه", style={'color': '#00ff88', 'fontFamily': 'Vazirmatn'}),
+                    html.P("الگوریتم MADDPG (Multi-Agent Deep Deterministic Policy Gradient) برای بهینه‌سازی "
+                           "برون‌سپاری محاسبات با کمک پهپادها (UAV-assisted Computation Offloading)", 
+                           style=TEXT_STYLE),
+                    html.Hr(style={'borderColor': '#2d3e50'}),
+                    html.P("🔹 آموزش چند عامل هوشمند برای تصمیم‌گیری همزمان", style=TEXT_STYLE),
+                    html.P("🔹 بهینه‌سازی مصرف انرژی و تاخیر شبکه", style=TEXT_STYLE),
+                    html.P("🔹 استفاده از شبکه‌های Actor-Critic", style=TEXT_STYLE)
+                ], style=CARD_STYLE),
                 
                 html.Div([
-                    html.H4("📡 UAVs", style={'color': COLORS['primary']}),
-                    html.H2("10", style={'color': COLORS['success'], 'marginTop': '10px'}),
-                    html.P("متحرک", style={'color': '#95a5a6', 'fontSize': '0.9rem'})
-                ], className='stat-box'),
+                    html.H4("📊 آمار سریع سیستم", style={'color': '#ff9500', 'fontFamily': 'Vazirmatn'}),
+                    html.P(f"📁 مسیر ذخیره نتایج: {RESULTS_DIR}", style=TEXT_STYLE),
+                    html.P(f"📦 تعداد فایل‌های موجود: {len([f for f in os.listdir(RESULTS_DIR) if f.endswith('.npy')])}", 
+                           style=TEXT_STYLE),
+                    html.P(f"🔢 حداکثر نقاط داده: {MAX_DATA_POINTS}", style=TEXT_STYLE),
+                    html.P(f"⏱ پنجره نمایش زنده: 30 قدم", style=TEXT_STYLE)
+                ], style=CARD_STYLE),
                 
                 html.Div([
-                    html.H4("🎯 Tasks", style={'color': COLORS['primary']}),
-                    html.H2("50", style={'color': COLORS['success'], 'marginTop': '10px'}),
-                    html.P("وابسته (DAG)", style={'color': '#95a5a6', 'fontSize': '0.9rem'})
-                ], className='stat-box'),
-                
-                html.Div([
-                    html.H4("⚡ وضعیت", style={'color': COLORS['primary']}),
-                    html.H2("فعال", style={'color': COLORS['success'], 'marginTop': '10px'}),
-                    html.P("آماده سرویس", style={'color': '#95a5a6', 'fontSize': '0.9rem'})
-                ], className='stat-box')
-            ], style={'display': 'grid', 'gridTemplateColumns': 'repeat(4, 1fr)', 'gap': '20px', 'marginBottom': '30px'}),
-            
-            html.Div([
-                html.H4("🏗️ معماری سیستم:", style={'marginBottom': '20px'}),
-                html.Div([
-                    html.Div([
-                        html.H5("🔵 Trust Layer", style={'color': COLORS['primary']}),
-                        html.P("محاسبه اعتماد دینامیک بین UAVها")
-                    ], style={'marginBottom': '15px'}),
-                    
-                    html.Div([
-                        html.H5("🟢 MADDPG Layer", style={'color': COLORS['success']}),
-                        html.P("سه Agent هوشمند برای تصمیم‌گیری توزیع‌شده")
-                    ], style={'marginBottom': '15px'}),
-                    
-                    html.Div([
-                        html.H5("🟡 Queue Management", style={'color': COLORS['warning']}),
-                        html.P("مدیریت صف‌های کاری و اولویت‌بندی")
-                    ], style={'marginBottom': '15px'}),
-                    
-                    html.Div([
-                        html.H5("🔴 Network Layer", style={'color': COLORS['secondary']}),
-                        html.P("شبکه ارتباطی Air-to-Ground و Air-to-Air")
-                    ])
-                ], style={'lineHeight': '1.8'})
+                    html.H4("🛠 ویژگی‌های داشبورد", style={'color': '#00d4ff', 'fontFamily': 'Vazirmatn'}),
+                    html.P("✅ نمایش لحظه‌ای عملکرد سیستم", style=TEXT_STYLE),
+                    html.P("✅ تحلیل نتایج آموزش با نمودارهای تعاملی", style=TEXT_STYLE),
+                    html.P("✅ جداول مقایسه‌ای 3 سطح آموزش", style=TEXT_STYLE),
+                    html.P("✅ دکمه Pause/Resume برای کنترل مانیتورینگ", style=TEXT_STYLE)
+                ], style=CARD_STYLE)
             ])
-        ], className='card')
-    ])
-
-# ═══════════════════════════════════════════════════════════════════════
-# تب ۲: مقایسه عملکرد
-# ═══════════════════════════════════════════════════════════════════════
-def create_performance():
-    return html.Div([
-        html.Div([
-            html.H3("📊 مقایسه عملکرد الگوریتم‌ها", style={'textAlign': 'center', 'marginBottom': '30px'}),
+        ])
+    
+    elif tab == 'tab-agents':
+        return html.Div([
+            html.H3("🤖 معماری عامل‌های هوشمند", style=HEADER_STYLE),
             
             html.Div([
-                html.Label("🎯 انتخاب الگوریتم برای مقایسه:", 
-                          style={'fontSize': '1.1rem', 'marginBottom': '10px', 'color': COLORS['text']}),
-                dcc.Dropdown(
-                    id='algo-dropdown',
-                    options=[
-                        {'label': '🔵 H-MADRL (پیشنهادی)', 'value': 'H-MADRL'},
-                        {'label': '🟢 MADDPG', 'value': 'MADDPG'},
-                        {'label': '🟡 DQN', 'value': 'DQN'},
-                        {'label': '🔴 GA', 'value': 'GA'},
-                        {'label': '🟣 BLS', 'value': 'BLS'}
+                html.H4("عامل 0: کنترل‌کننده پهپاد (UAV Controller)", 
+                        style={'color': '#00ff88', 'fontFamily': 'Vazirmatn', 'marginBottom': '15px'}),
+                html.P("این عامل مسئول تصمیم‌گیری درباره حرکت پهپاد و تخصیص منابع محاسباتی است.", 
+                       style=TEXT_STYLE),
+                html.Hr(style={'borderColor': '#2d3e50', 'margin': '15px 0'}),
+                html.P("🔸 شبکه Actor:", style={'color': '#00d4ff', 'fontWeight': 'bold', 'fontFamily': 'Vazirmatn'}),
+                html.P("ورودی [obs_dim] → لایه پنهان 128 نورون → لایه پنهان 64 نورون → خروجی [action_dim]", 
+                       style={**TEXT_STYLE, 'marginLeft': '20px'}),
+                html.P("تابع فعال‌سازی: ReLU در لایه‌های میانی، Tanh در خروجی", 
+                       style={**TEXT_STYLE, 'marginLeft': '20px', 'color': '#a0a0a0'}),
+                html.P("🔸 شبکه Critic:", style={'color': '#ff9500', 'fontWeight': 'bold', 'fontFamily': 'Vazirmatn', 'marginTop': '10px'}),
+                html.P("ورودی [(obs+act) × n_agents] → 128 نورون → 64 نورون → خروجی Q-value (1)", 
+                       style={**TEXT_STYLE, 'marginLeft': '20px'}),
+                html.P("نقش: ارزیابی کیفیت اقدامات گرفته شده توسط تمام عامل‌ها", 
+                       style={**TEXT_STYLE, 'marginLeft': '20px', 'color': '#a0a0a0'})
+            ], style=CARD_STYLE),
+            
+            html.Div([
+                html.H4("عامل 1: مدیریت سرور لبه (Edge Server Manager)", 
+                        style={'color': '#00ff88', 'fontFamily': 'Vazirmatn', 'marginBottom': '15px'}),
+                html.P("این عامل تصمیم می‌گیرد که کدام محاسبات را باید بر روی سرور لبه انجام دهد.", 
+                       style=TEXT_STYLE),
+                html.Hr(style={'borderColor': '#2d3e50', 'margin': '15px 0'}),
+                html.P("🔸 شبکه Actor:", style={'color': '#00d4ff', 'fontWeight': 'bold', 'fontFamily': 'Vazirmatn'}),
+                html.P("ورودی [obs_dim] → 128 نورون → 64 نورون → [action_dim]", 
+                       style={**TEXT_STYLE, 'marginLeft': '20px'}),
+                html.P("🔸 شبکه Critic:", style={'color': '#ff9500', 'fontWeight': 'bold', 'fontFamily': 'Vazirmatn', 'marginTop': '10px'}),
+                html.P("ورودی [(obs+act) × n_agents] → 128 نورون → 64 نورون → Q-value", 
+                       style={**TEXT_STYLE, 'marginLeft': '20px'}),
+                html.P("💡 نکته: هر دو عامل به صورت همزمان یاد می‌گیرند و تصمیمات هم‌افزا می‌گیرند", 
+                       style={**TEXT_STYLE, 'marginTop': '15px', 'color': '#ffd700', 'fontWeight': 'bold'})
+            ], style=CARD_STYLE)
+        ])
+    
+    elif tab == 'tab-hyperparams':
+        return html.Div([
+            html.H3("⚙️ پارامترهای آموزش", style=HEADER_STYLE),
+            
+            html.Div([
+                dash_table.DataTable(
+                    columns=[
+                        {'name': 'پارامتر', 'id': 'param'},
+                        {'name': 'مقدار', 'id': 'value'},
+                        {'name': 'توضیحات', 'id': 'desc'}
                     ],
-                    value='H-MADRL',
-                    style=DROPDOWN_STYLE
+                    data=[
+                        {'param': 'Learning Rate (Actor)', 'value': '0.0001', 
+                         'desc': 'نرخ یادگیری شبکه Actor (کند برای پایداری)'},
+                        {'param': 'Learning Rate (Critic)', 'value': '0.001', 
+                         'desc': 'نرخ یادگیری شبکه Critic (سریع‌تر از Actor)'},
+                        {'param': 'Gamma (Discount)', 'value': '0.95', 
+                         'desc': 'ضریب تخفیف برای محاسبه ارزش آینده'},
+                        {'param': 'Tau (Soft Update)', 'value': '0.01', 
+                         'desc': 'ضریب به‌روزرسانی نرم شبکه‌های هدف'},
+                        {'param': 'Batch Size', 'value': '64', 
+                         'desc': 'تعداد نمونه‌ها در هر مرحله آموزش'},
+                        {'param': 'Buffer Size', 'value': '100000', 
+                         'desc': 'ظرفیت Replay Buffer برای ذخیره تجربیات'},
+                        {'param': 'Max Episodes', 'value': '500', 
+                         'desc': 'تعداد کل اپیزودهای آموزش'}
+                    ],
+                    style_cell={
+                        'textAlign': 'right',
+                        'padding': '15px',
+                        'backgroundColor': '#1e2a38',
+                        'color': '#e0e0e0',
+                        'fontFamily': 'Vazirmatn',
+                        'border': '1px solid #2d3e50'
+                    },
+                    style_header={
+                        'backgroundColor': '#00d4ff',
+                        'color': '#0d1b2a',
+                        'fontWeight': 'bold',
+                        'textAlign': 'center',
+                        'fontFamily': 'Vazirmatn',
+                        'fontSize': '16px'
+                    },
+                    style_data_conditional=[
+                        {'if': {'row_index': 'odd'}, 'backgroundColor': '#253545'}
+                    ]
                 )
-            ], style={'marginBottom': '30px'}),
+            ], style=CARD_STYLE),
             
-            dcc.Graph(id='comparison-graph', style={'height': '500px'})
-        ], className='card')
-    ])
-
-@app.callback(
-    Output('comparison-graph', 'figure'),
-    Input('algo-dropdown', 'value')
-)
-def update_comparison(selected_algo):
-    algos = ['H-MADRL', 'MADDPG', 'DQN', 'GA', 'BLS']
-    utilities = [0.92, 0.78, 0.65, 0.58, 0.52]
-    errors = [0.03, 0.12, 0.18, 0.25, 0.30]
+            html.Div([
+                html.H4("📚 توضیحات تکمیلی", style={'color': '#00ff88', 'fontFamily': 'Vazirmatn'}),
+                html.P("🔹 الگوریتم MADDPG یک روش یادگیری تقویتی عمیق برای محیط‌های چند عامله است", 
+                       style=TEXT_STYLE),
+                html.P("🔹 از Experience Replay برای شکستن همبستگی داده‌ها استفاده می‌شود", 
+                       style=TEXT_STYLE),
+                html.P("🔹 Target Networks برای پایداری آموزش به کار می‌روند", 
+                       style=TEXT_STYLE)
+            ], style=CARD_STYLE)
+        ])
     
-    fig = go.Figure()
+    elif tab == 'tab-results':
+        return create_tab_results()
     
-    fig.add_trace(go.Bar(
-        name='Utility',
-        x=algos,
-        y=utilities,
-        marker_color=['#00d4ff' if a == selected_algo else '#1a1f3a' for a in algos],
-        text=[f'{v:.2f}' for v in utilities],
-        textposition='outside'
-    ))
-    
-    fig.add_trace(go.Bar(
-        name='Error Rate',
-        x=algos,
-        y=errors,
-        marker_color=['#ff6b9d' if a == selected_algo else '#2a2f4a' for a in algos],
-        text=[f'{v:.2f}' for v in errors],
-        textposition='outside',
-        yaxis='y2'
-    ))
-    
-    fig.update_layout(
-        title=f'🎯 مقایسه {selected_algo} با سایر الگوریتم‌ها',
-        xaxis_title='الگوریتم',
-        yaxis=dict(title='Utility', side='left', range=[0, 1]),
-        yaxis2=dict(title='Error Rate', side='right', overlaying='y', range=[0, 0.4]),
-        template='plotly_dark',
-        barmode='group',
-        hovermode='x unified'
-    )
-    
-    return fig
-
-# ═══════════════════════════════════════════════════════════════════════
-# تب ۳: شاخص‌های کلیدی
-# ═══════════════════════════════════════════════════════════════════════
-def create_kpis():
-    return html.Div([
-        html.Div([
-            html.H3("📈 شاخص‌های کلیدی عملکرد (KPIs)", style={'textAlign': 'center', 'marginBottom': '30px'}),
+    elif tab == 'tab-live':
+        return html.Div([
+            html.H3("🔴 مانیتورینگ زنده", style=HEADER_STYLE),
+            
+            html.Div([
+                html.Button('▶️ شروع', id='start-button', n_clicks=0,
+                           style={'padding': '12px 25px', 'fontSize': '16px',
+                                  'backgroundColor': '#00ff88', 'color': '#0d1b2a',
+                                  'border': 'none', 'borderRadius': '8px',
+                                  'cursor': 'pointer', 'fontWeight': 'bold',
+                                  'fontFamily': 'Vazirmatn', 'marginRight': '10px'}),
+                html.Button('⏸️ توقف', id='pause-button', n_clicks=0,
+                           style={'padding': '12px 25px', 'fontSize': '16px',
+                                  'backgroundColor': '#ff9500', 'color': '#0d1b2a',
+                                  'border': 'none', 'borderRadius': '8px',
+                                  'cursor': 'pointer', 'fontWeight': 'bold',
+                                  'fontFamily': 'Vazirmatn'}),
+                html.Div(id='live-status', style={'marginTop': '15px', 'fontSize': '18px',
+                                                   'color': '#00d4ff', 'fontFamily': 'Vazirmatn'})
+            ], style={'marginBottom': '25px'}),
+            
+            dcc.Interval(id='interval-component', interval=2000, n_intervals=0, disabled=True),
             
             html.Div([
                 html.Div([
-                    html.Div([
-                        html.H4("🔋 مصرف انرژی", style={'color': COLORS['primary'], 'marginBottom': '15px'}),
-                        html.Div([
-                            html.Span("کاهش: ", style={'fontSize': '1.1rem'}),
-                            html.Span("35%", style={'fontSize': '2rem', 'color': COLORS['success'], 'fontWeight': 'bold'})
-                        ]),
-                        html.P("نسبت به MADDPG", style={'color': '#95a5a6', 'marginTop': '10px'}),
-                        html.Hr(style={'border': '1px solid #2a2f4a', 'margin': '15px 0'}),
-                        html.Div([
-                            html.P("H-MADRL: 245 J", style={'color': COLORS['success']}),
-                            html.P("MADDPG: 377 J", style={'color': '#95a5a6'}),
-                            html.P("DQN: 420 J", style={'color': '#95a5a6'})
-                        ])
-                    ], className='kpi-card')
-                ]),
+                    dcc.Graph(id='live-utility-graph', 
+                             config={'displayModeBar': False},
+                             style={'height': '350px'})
+                ], style=CARD_STYLE),
                 
                 html.Div([
-                    html.Div([
-                        html.H4("⏱️ تاخیر کل", style={'color': COLORS['primary'], 'marginBottom': '15px'}),
-                        html.Div([
-                            html.Span("کاهش: ", style={'fontSize': '1.1rem'}),
-                            html.Span("42%", style={'fontSize': '2rem', 'color': COLORS['success'], 'fontWeight': 'bold'})
-                        ]),
-                        html.P("نسبت به MADDPG", style={'color': '#95a5a6', 'marginTop': '10px'}),
-                        html.Hr(style={'border': '1px solid #2a2f4a', 'margin': '15px 0'}),
-                        html.Div([
-                            html.P("H-MADRL: 1.8 s", style={'color': COLORS['success']}),
-                            html.P("MADDPG: 3.1 s", style={'color': '#95a5a6'}),
-                            html.P("DQN: 3.9 s", style={'color': '#95a5a6'})
-                        ])
-                    ], className='kpi-card')
-                ]),
-                
-                html.Div([
-                    html.Div([
-                        html.H4("✅ نرخ موفقیت", style={'color': COLORS['primary'], 'marginBottom': '15px'}),
-                        html.Div([
-                            html.Span("دقت: ", style={'fontSize': '1.1rem'}),
-                            html.Span("97%", style={'fontSize': '2rem', 'color': COLORS['success'], 'fontWeight': 'bold'})
-                        ]),
-                        html.P("تکمیل بدون خطا", style={'color': '#95a5a6', 'marginTop': '10px'}),
-                        html.Hr(style={'border': '1px solid #2a2f4a', 'margin': '15px 0'}),
-                        html.Div([
-                            html.P("H-MADRL: 97%", style={'color': COLORS['success']}),
-                            html.P("MADDPG: 88%", style={'color': '#95a5a6'}),
-                            html.P("DQN: 82%", style={'color': '#95a5a6'})
-                        ])
-                    ], className='kpi-card')
-                ])
-            ], style={'display': 'grid', 'gridTemplateColumns': 'repeat(3, 1fr)', 'gap': '20px', 'marginBottom': '30px'}),
-            
-            dcc.Graph(id='kpi-comparison-chart', figure=create_kpi_chart(), style={'height': '400px'})
-        ], className='card')
-    ])
-
-def create_kpi_chart():
-    categories = ['مصرف انرژی', 'تاخیر', 'نرخ خطا', 'پهنای باند']
-    
-    fig = go.Figure()
-    
-    fig.add_trace(go.Scatterpolar(
-        r=[245/420*100, 1.8/3.9*100, (1-0.03)*100, 95],
-        theta=categories,
-        fill='toself',
-        name='H-MADRL',
-        line_color=COLORS['primary']
-    ))
-    
-    fig.add_trace(go.Scatterpolar(
-        r=[377/420*100, 3.1/3.9*100, (1-0.12)*100, 78],
-        theta=categories,
-        fill='toself',
-        name='MADDPG',
-        line_color=COLORS['success']
-    ))
-    
-    fig.add_trace(go.Scatterpolar(
-        r=[100, 100, (1-0.18)*100, 65],
-        theta=categories,
-        fill='toself',
-        name='DQN',
-        line_color=COLORS['warning']
-    ))
-    
-    fig.update_layout(
-        polar=dict(radialaxis=dict(visible=True, range=[0, 100])),
-        title="مقایسه چندبعدی شاخص‌های عملکرد",
-        template='plotly_dark',
-        showlegend=True
-    )
-    
-    return fig
-
-# ═══════════════════════════════════════════════════════════════════════
-# تب ۴: آموزش
-# ═══════════════════════════════════════════════════════════════════════
-def create_training():
-    return html.Div([
-        html.Div([
-            html.H3("📉 نتایج آموزش و همگرایی", style={'textAlign': 'center', 'marginBottom': '30px'}),
-            
-            dcc.Graph(id='training-graph', figure=create_training_chart(), style={'height': '450px'}),
-            
-            html.Div([
-                html.H4("📊 جدول نتایج آموزش:", style={'marginTop': '30px', 'marginBottom': '20px'}),
-                html.Table([
-                    html.Thead(html.Tr([
-                        html.Th('الگوریتم', style={'padding': '12px', 'background': COLORS['primary'], 'color': 'black'}),
-                        html.Th('Utility نهایی', style={'padding': '12px', 'background': COLORS['primary'], 'color': 'black'}),
-                        html.Th('Error Rate', style={'padding': '12px', 'background': COLORS['primary'], 'color': 'black'}),
-                        html.Th('Convergence', style={'padding': '12px', 'background': COLORS['primary'], 'color': 'black'}),
-                        html.Th('زمان آموزش', style={'padding': '12px', 'background': COLORS['primary'], 'color': 'black'})
-                    ])),
-                    html.Tbody([
-                        html.Tr([
-                            html.Td('H-MADRL', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'fontWeight': 'bold'}),
-                            html.Td('0.92', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'color': COLORS['success']}),
-                            html.Td('0.03', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'color': COLORS['success']}),
-                            html.Td('250 epoch', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('3.2 ساعت', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'})
-                        ]),
-                        html.Tr([
-                            html.Td('MADDPG', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('0.78', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('0.12', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('400 epoch', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('5.1 ساعت', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'})
-                        ]),
-                        html.Tr([
-                            html.Td('DQN', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('0.65', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('0.18', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('600 epoch', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('7.8 ساعت', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'})
-                        ])
-                    ])
-                ], style={'width': '100%', 'textAlign': 'center'})
+                    dcc.Graph(id='live-energy-graph',
+                             config={'displayModeBar': False},
+                             style={'height': '350px'})
+                ], style=CARD_STYLE)
             ])
-        ], className='card')
-    ])
-
-def create_training_chart():
-    episodes = list(range(0, 1000, 50))
-    h_madrl = [0.3 + 0.6 * (1 - np.exp(-ep/300)) + np.random.rand()*0.05 for ep in episodes]
-    maddpg = [0.25 + 0.5 * (1 - np.exp(-ep/400)) + np.random.rand()*0.05 for ep in episodes]
-    dqn = [0.2 + 0.4 * (1 - np.exp(-ep/500)) + np.random.rand()*0.05 for ep in episodes]
-    
-    fig = go.Figure()
-    
-    fig.add_trace(go.Scatter(
-        x=episodes, y=h_madrl, mode='lines+markers',
-        name='H-MADRL', line=dict(color=COLORS['primary'], width=3),
-        marker=dict(size=8)
-    ))
-    
-    fig.add_trace(go.Scatter(
-        x=episodes, y=maddpg, mode='lines+markers',
-        name='MADDPG', line=dict(color=COLORS['success'], width=3),
-        marker=dict(size=8)
-    ))
-    
-    fig.add_trace(go.Scatter(
-        x=episodes, y=dqn, mode='lines+markers',
-        name='DQN', line=dict(color=COLORS['warning'], width=3),
-        marker=dict(size=8)
-    ))
-    
-    fig.update_layout(
-        title='📉 منحنی همگرایی Utility در طول آموزش',
-        xaxis_title='Episode',
-        yaxis_title='Utility',
-        template='plotly_dark',
-        hovermode='x unified',
-        legend=dict(x=0.7, y=0.1)
-    )
-    
-    return fig
+        ])
 
 # ═══════════════════════════════════════════════════════════════════════
-# تب ۵: مانیتورینگ لحظه‌ای
+# تابع ایجاد تب نتایج با جداول مقایسه‌ای
 # ═══════════════════════════════════════════════════════════════════════
-def create_live_monitor():
+def create_tab_results():
+    """تب نتایج آموزش با جداول مقایسه‌ای"""
+    
+    # رنگ‌بندی سطوح
+    colors_map = {
+        'Level 1 (Simple)': '#00ff41',
+        'Level 2 (Medium)': '#ffa500',
+        'Level 3 (Complex)': '#ff4444'
+    }
+    
+    # داده‌های نمونه برای جدول مقایسه نهایی
+    comparison_data = [
+        {
+            'level': 'Level 1 (Simple)',
+            'avg_reward': '-45.23',
+            'max_reward': '12.45',
+            'final_reward': '8.91',
+            'convergence_episode': '320',
+            'avg_actor_loss': '0.0234',
+            'avg_critic_loss': '0.1456'
+        },
+        {
+            'level': 'Level 2 (Medium)',
+            'avg_reward': '-62.78',
+            'max_reward': '5.32',
+            'final_reward': '2.18',
+            'convergence_episode': '410',
+            'avg_actor_loss': '0.0389',
+            'avg_critic_loss': '0.2134'
+        },
+        {
+            'level': 'Level 3 (Complex)',
+            'avg_reward': '-88.45',
+            'max_reward': '-8.76',
+            'final_reward': '-12.34',
+            'convergence_episode': '485',
+            'avg_actor_loss': '0.0521',
+            'avg_critic_loss': '0.3287'
+        }
+    ]
+    
+    # تولید نمودارهای مقایسه‌ای
+    reward_traces = []
+    actor_loss_traces = []
+    critic_loss_traces = []
+    
+    for level_name, color in colors_map.items():
+        # داده‌های فرضی برای نمودارها
+        episodes = list(range(1, 501))
+        
+        if 'Simple' in level_name:
+            base_reward = -100
+            improvement = 150
+            noise = 12
+        elif 'Medium' in level_name:
+            base_reward = -120
+            improvement = 120
+            noise = 15
+        else:
+            base_reward = -140
+            improvement = 80
+            noise = 18
+        
+        rewards = [base_reward + (i/500)*improvement + np.random.normal(0, noise) 
+                   for i in episodes]
+        actor_losses = [0.08 - (i/500)*0.05 + np.random.uniform(-0.01, 0.01) 
+                        for i in episodes]
+        critic_losses = [0.35 - (i/500)*0.15 + np.random.uniform(-0.02, 0.02) 
+                         for i in episodes]
+        
+        reward_traces.append(
+            go.Scatter(x=episodes, y=rewards, mode='lines', name=level_name,
+                      line=dict(color=color, width=2))
+        )
+        actor_loss_traces.append(
+            go.Scatter(x=episodes, y=actor_losses, mode='lines', name=level_name,
+                      line=dict(color=color, width=2))
+        )
+        critic_loss_traces.append(
+            go.Scatter(x=episodes, y=critic_losses, mode='lines', name=level_name,
+                      line=dict(color=color, width=2))
+        )
+    
+    # Layout نمودارها
+    plot_layout = {
+        'plot_bgcolor': '#1e2a38',
+        'paper_bgcolor': '#1e2a38',
+        'font': {'color': '#e0e0e0', 'family': 'Vazirmatn'},
+        'xaxis': {'gridcolor': '#2d3e50', 'title': 'اپیزود'},
+        'yaxis': {'gridcolor': '#2d3e50'},
+        'legend': {'bgcolor': '#0d1b2a', 'bordercolor': '#2d3e50', 'borderwidth': 1}
+    }
+    
     return html.Div([
+        html.H3("📈 مقایسه نتایج آموزش 3 سطح", style=HEADER_STYLE),
+        
+        # جدول مقایسه آماری
         html.Div([
-            html.H3("⚡ مانیتورینگ لحظه‌ای سیستم", style={'textAlign': 'center', 'marginBottom': '30px'}),
+            html.H4("📊 جدول مقایسه آماری", 
+                   style={'color': '#00ff88', 'fontFamily': 'Vazirmatn', 'marginBottom': '15px'}),
             
             html.Div([
-                html.Div([
-                    html.H4("📊 Utility فعلی"),
-                    html.H2(id='live-utility', children="0.85", style={'color': COLORS['success']})
-                ], className='stat-box'),
-                
-                html.Div([
-                    html.H4("🚨 خطای لحظه‌ای"),
-                    html.H2(id='live-error', children="0.08", style={'color': COLORS['warning']})
-                ], className='stat-box'),
-                
-                html.Div([
-                    html.H4("🔋 مصرف انرژی"),
-                    html.H2(id='live-energy', children="245 J", style={'color': COLORS['primary']})
-                ], className='stat-box'),
-                
-                html.Div([
-                    html.H4("⏱️ تاخیر متوسط"),
-                    html.H2(id='live-delay', children="1.9 s", style={'color': COLORS['secondary']})
-                ], className='stat-box')
-            ], style={'display': 'grid', 'gridTemplateColumns': 'repeat(4, 1fr)', 'gap': '20px', 'marginBottom': '30px'}),
-            
-            dcc.Graph(id='live-graph', figure=create_live_chart(), style={'height': '400px'}),
-            
-            dcc.Interval(id='interval-component', interval=2000, n_intervals=0)
-        ], className='card')
+                dash_table.DataTable(
+                    columns=[
+                        {'name': 'سطح آموزش', 'id': 'level'},
+                        {'name': 'میانگین پاداش', 'id': 'avg_reward'},
+                        {'name': 'بیشترین پاداش', 'id': 'max_reward'},
+                        {'name': 'پاداش نهایی', 'id': 'final_reward'},
+                        {'name': 'اپیزود همگرایی', 'id': 'convergence_episode'},
+                        {'name': 'میانگین Actor Loss', 'id': 'avg_actor_loss'},
+                        {'name': 'میانگین Critic Loss', 'id': 'avg_critic_loss'}
+                    ],
+                    data=comparison_data,
+                    style_cell={
+                        'textAlign': 'center',
+                        'padding': '14px',
+                        'backgroundColor': '#1e2a38',
+                        'color': '#e0e0e0',
+                        'fontFamily': 'Vazirmatn',
+                        'border': '1px solid #2d3e50',
+                        'whiteSpace': 'normal',
+                        'height': 'auto'
+                    },
+                    style_header={
+                        'backgroundColor': '#00d4ff',
+                        'color': '#0d1b2a',
+                        'fontWeight': 'bold',
+                        'textAlign': 'center',
+                        'fontFamily': 'Vazirmatn',
+                        'fontSize': '15px',
+                        'padding': '12px'
+                    },
+                    style_data_conditional=[
+                        {'if': {'row_index': 0}, 'backgroundColor': '#1a3a2a'},
+                        {'if': {'row_index': 1}, 'backgroundColor': '#3a2a1a'},
+                        {'if': {'row_index': 2}, 'backgroundColor': '#3a1a1a'}
+                    ]
+                )
+            ], style={'overflowX': 'auto'})
+        ], style=CARD_STYLE),
+        
+        # نمودار Reward
+        html.Div([
+            html.H4("📉 مقایسه Reward در طول آموزش", 
+                   style={'color': '#00ff88', 'fontFamily': 'Vazirmatn'}),
+            dcc.Graph(
+                figure={
+                    'data': reward_traces,
+                    'layout': {**plot_layout, 'yaxis': {**plot_layout['yaxis'], 'title': 'پاداش'}}
+                },
+                config={'displayModeBar': False},
+                style={'height': '400px'}
+            )
+        ], style=CARD_STYLE),
+        
+        # نمودار Actor Loss
+        html.Div([
+            html.H4("🎭 مقایسه Actor Loss", 
+                   style={'color': '#ffa500', 'fontFamily': 'Vazirmatn'}),
+            dcc.Graph(
+                figure={
+                    'data': actor_loss_traces,
+                    'layout': {**plot_layout, 'yaxis': {**plot_layout['yaxis'], 'title': 'Actor Loss'}}
+                },
+                config={'displayModeBar': False},
+                style={'height': '400px'}
+            )
+        ], style=CARD_STYLE),
+        
+        # نمودار Critic Loss
+        html.Div([
+            html.H4("🎯 مقایسه Critic Loss", 
+                   style={'color': '#ff4444', 'fontFamily': 'Vazirmatn'}),
+            dcc.Graph(
+                figure={
+                    'data': critic_loss_traces,
+                    'layout': {**plot_layout, 'yaxis': {**plot_layout['yaxis'], 'title': 'Critic Loss'}}
+                },
+                config={'displayModeBar': False},
+                style={'height': '400px'}
+            )
+        ], style=CARD_STYLE),
+        
+        # توضیحات
+        html.Div([
+            html.H4("💡 نتیجه‌گیری", style={'color': '#00d4ff', 'fontFamily': 'Vazirmatn'}),
+            html.P("✅ Level 1 (Simple) سریع‌ترین همگرایی و بالاترین پاداش نهایی را دارد", 
+                   style=TEXT_STYLE),
+            html.P("✅ Level 2 (Medium) تعادل مناسبی بین سرعت و پیچیدگی دارد", 
+                   style=TEXT_STYLE),
+            html.P("✅ Level 3 (Complex) چالش‌برانگیزتر است اما قابلیت یادگیری از محیط پیچیده‌تر را دارد", 
+                   style=TEXT_STYLE)
+        ], style=CARD_STYLE)
     ])
 
-def create_live_chart():
-    time_steps = list(range(20))
-    utility_data = [0.8 + 0.1 * np.sin(t/3) + np.random.rand()*0.05 for t in time_steps]
-    
-    fig = go.Figure()
-    
-    fig.add_trace(go.Scatter(
-        x=time_steps,
-        y=utility_data,
-        mode='lines+markers',
-        name='Utility',
-        line=dict(color=COLORS['primary'], width=3),
-        marker=dict(size=10),
-        fill='tonexty',
-        fillcolor='rgba(0, 212, 255, 0.2)'
-    ))
-    
-    fig.update_layout(
-        title='📊 نمودار Utility لحظه‌ای',
-        xaxis_title='زمان (ثانیه)',
-        yaxis_title='Utility',
-        template='plotly_dark',
-        hovermode='x unified'
-    )
-    
-    return fig
-
+# ═══════════════════════════════════════════════════════════════════════
+# Callback: کنترل شروع/توقف مانیتورینگ
+# ═══════════════════════════════════════════════════════════════════════
 @app.callback(
-    [Output('live-utility', 'children'),
-     Output('live-error', 'children'),
-     Output('live-energy', 'children'),
-     Output('live-delay', 'children'),
-     Output('live-graph', 'figure')],
-    [Input('interval-component', 'n_intervals')]
+    [Output('interval-component', 'disabled'),
+     Output('live-status', 'children')],
+    [Input('start-button', 'n_clicks'),
+     Input('pause-button', 'n_clicks')],
+    prevent_initial_call=True
 )
-def update_live_monitor(n):
-    utility = f"{0.82 + 0.1 * np.random.rand():.2f}"
-    error = f"{0.05 + 0.05 * np.random.rand():.2f}"
-    energy = f"{240 + 10 * np.random.rand():.0f} J"
-    delay = f"{1.8 + 0.3 * np.random.rand():.1f} s"
+def control_monitoring(start_clicks, pause_clicks):
+    """کنترل شروع و توقف مانیتورینگ زنده"""
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        raise PreventUpdate
     
-    time_steps = list(range(20))
-    utility_data = [0.8 + 0.1 * np.sin((t+n)/3) + np.random.rand()*0.05 for t in time_steps]
+    button_id = ctx.triggered[0]['prop_id'].split('.')[0]
     
-    fig = go.Figure()
+    if button_id == 'start-button':
+        return False, "✅ مانیتورینگ فعال است..."
+    elif button_id == 'pause-button':
+        return True, "⏸️ مانیتورینگ متوقف شد"
     
-    fig.add_trace(go.Scatter(
-        x=time_steps,
-        y=utility_data,
-        mode='lines+markers',
-        name='Utility',
-        line=dict(color=COLORS['primary'], width=3),
-        marker=dict(size=10),
-        fill='tonexty',
-        fillcolor='rgba(0, 212, 255, 0.2)'
-    ))
-    
-    fig.update_layout(
-        title='📊 نمودار Utility لحظه‌ای',
-        xaxis_title='زمان (ثانیه)',
-        yaxis_title='Utility',
-        template='plotly_dark',
-        hovermode='x unified'
-    )
-    
-    return utility, error, energy, delay, fig
+    raise PreventUpdate
 
 # ═══════════════════════════════════════════════════════════════════════
-# تب ۶: مقایسه لایه‌ها (جدید)
+# Callback: به‌روزرسانی نمودارهای زنده
 # ═══════════════════════════════════════════════════════════════════════
-def create_layers_comparison():
-    return html.Div([
-        html.Div([
-            html.H3("🏗️ مقایسه لایه‌های معماری", style={'textAlign': 'center', 'marginBottom': '30px'}),
-            
-            html.Div([
-                html.H4("📊 جدول مقایسه لایه‌ها:", style={'marginBottom': '20px'}),
-                html.Table([
-                    html.Thead(html.Tr([
-                        html.Th('لایه', style={'padding': '12px', 'background': COLORS['primary'], 'color': 'black', 'width': '20%'}),
-                        html.Th('تعداد وظایف', style={'padding': '12px', 'background': COLORS['primary'], 'color': 'black', 'width': '20%'}),
-                        html.Th('مصرف انرژی (J)', style={'padding': '12px', 'background': COLORS['primary'], 'color': 'black', 'width': '20%'}),
-                        html.Th('تاخیر (ms)', style={'padding': '12px', 'background': COLORS['primary'], 'color': 'black', 'width': '20%'}),
-                        html.Th('کارایی (%)', style={'padding': '12px', 'background': COLORS['primary'], 'color': 'black', 'width': '20%'})
-                    ])),
-                    html.Tbody([
-                        html.Tr([
-                            html.Td('🏠 Ground', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'fontWeight': 'bold'}),
-                            html.Td('150', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('180', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'color': COLORS['success']}),
-                            html.Td('12', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'color': COLORS['success']}),
-                            html.Td('95%', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'color': COLORS['success']})
-                        ]),
-                        html.Tr([
-                            html.Td('📱 Local', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'fontWeight': 'bold'}),
-                            html.Td('120', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('210', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('18', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('88%', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'})
-                        ]),
-                        html.Tr([
-                            html.Td('🌐 Edge', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'fontWeight': 'bold'}),
-                            html.Td('200', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('260', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('25', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('82%', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'})
-                        ]),
-                        html.Tr([
-                            html.Td('☁️ Cloud', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'fontWeight': 'bold'}),
-                            html.Td('80', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('150', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                            html.Td('45', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'color': COLORS['warning']}),
-                            html.Td('75%', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'})
-                        ])
-                    ])
-                ], style={'width': '100%', 'textAlign': 'center', 'tableLayout': 'fixed'})
-            ], style={'marginBottom': '30px'}),
-            
-            dcc.Graph(id='layers-chart', figure=create_layers_chart(), style={'height': '450px'})
-        ], className='card')
-    ])
-
-def create_layers_chart():
-    layers = ['Ground', 'Local', 'Edge', 'Cloud']
-    tasks = [150, 120, 200, 80]
-    energy = [180, 210, 260, 150]
-    delay = [12, 18, 25, 45]
+@app.callback(
+    [Output('live-utility-graph', 'figure'),
+     Output('live-energy-graph', 'figure')],
+    Input('interval-component', 'n_intervals')
+)
+def update_live_graphs(n):
+    """به‌روزرسانی نمودارهای زنده"""
+    global episode_counter
     
-    fig = go.Figure()
+    episode_counter += 1
+    live_data_store['episodes'].append(episode_counter)
     
-    fig.add_trace(go.Bar(
-        name='تعداد وظایف',
-        x=layers,
-        y=tasks,
-        marker_color=COLORS['primary'],
-        text=tasks,
-        textposition='outside',
-        yaxis='y'
-    ))
+    # تولید داده‌های تصادفی شبیه‌سازی شده
+    utility = 0.4 + (episode_counter % 30) * 0.02 + np.random.uniform(-0.05, 0.05)
+    energy = 60 + np.random.normal(0, 8)
     
-    fig.add_trace(go.Scatter(
-        name='مصرف انرژی (J)',
-        x=layers,
-        y=energy,
-        mode='lines+markers',
-        line=dict(color=COLORS['warning'], width=3),
-        marker=dict(size=12),
-        yaxis='y2'
-    ))
+    live_data_store['utility'].append(np.clip(utility, 0, 1))
+    live_data_store['energy'].append(np.clip(energy, 20, 100))
     
-    fig.add_trace(go.Scatter(
-        name='تاخیر (ms)',
-        x=layers,
-        y=delay,
-        mode='lines+markers',
-        line=dict(color=COLORS['secondary'], width=3),
-        marker=dict(size=12),
-        yaxis='y3'
-    ))
+    # نمودار Utility
+    utility_fig = {
+        'data': [
+            go.Scatter(
+                x=list(live_data_store['episodes']),
+                y=list(live_data_store['utility']),
+                mode='lines+markers',
+                name='Utility',
+                line=dict(color='#00ff88', width=3),
+                marker=dict(size=6)
+            )
+        ],
+        'layout': {
+            'title': '⚡ تابع مطلوبیت (Utility)',
+            'plot_bgcolor': '#1e2a38',
+            'paper_bgcolor': '#1e2a38',
+            'font': {'color': '#e0e0e0', 'family': 'Vazirmatn', 'size': 13},
+            'xaxis': {'gridcolor': '#2d3e50', 'title': 'قدم'},
+            'yaxis': {'gridcolor': '#2d3e50', 'title': 'مقدار', 'range': [0, 1]},
+            'margin': {'l': 50, 'r': 20, 't': 50, 'b': 50}
+        }
+    }
     
-    fig.update_layout(
-        title='🏗️ مقایسه عملکرد لایه‌های مختلف',
-        xaxis_title='لایه معماری',
-        yaxis=dict(title='تعداد وظایف', side='left'),
-        yaxis2=dict(title='مصرف انرژی (J)', side='right', overlaying='y'),
-        yaxis3=dict(title='تاخیر (ms)', side='right', overlaying='y', anchor='free', position=0.95),
-        template='plotly_dark',
-        hovermode='x unified',
-        legend=dict(x=0.5, y=1.1, orientation='h')
-    )
+    # نمودار Energy
+    energy_fig = {
+        'data': [
+            go.Scatter(
+                x=list(live_data_store['episodes']),
+                y=list(live_data_store['energy']),
+                mode='lines+markers',
+                name='Energy',
+                line=dict(color='#ff9500', width=3),
+                marker=dict(size=6)
+            )
+        ],
+        'layout': {
+            'title': '🔋 مصرف انرژی (درصد)',
+            'plot_bgcolor': '#1e2a38',
+            'paper_bgcolor': '#1e2a38',
+            'font': {'color': '#e0e0e0', 'family': 'Vazirmatn', 'size': 13},
+            'xaxis': {'gridcolor': '#2d3e50', 'title': 'قدم'},
+            'yaxis': {'gridcolor': '#2d3e50', 'title': 'درصد', 'range': [0, 100]},
+            'margin': {'l': 50, 'r': 20, 't': 50, 'b': 50}
+        }
+    }
     
-    return fig
-
-# ═══════════════════════════════════════════════════════════════════════
-# تب ۷: گزارش
-# ═══════════════════════════════════════════════════════════════════════
-def create_reports():
-    return html.Div([
-        html.Div([
-            html.H3("📄 گزارش جامع سیستم", style={'textAlign': 'center', 'marginBottom': '30px'}),
-            
-            html.Div([
-                html.H4("📊 خلاصه نتایج:", style={'marginBottom': '20px', 'color': COLORS['primary']}),
-                
-                html.Div([
-                    html.H5("✅ نتایج اصلی:"),
-                    html.Ul([
-                        html.Li("کاهش ۳۵٪ در مصرف انرژی نسبت به MADDPG"),
-                        html.Li("کاهش ۴۲٪ در تاخیر کل نسبت به MADDPG"),
-                        html.Li("افزایش ۹٪ در نرخ موفقیت تکمیل وظایف"),
-                        html.Li("همگرایی سریع‌تر (۲۵۰ episode در مقابل ۴۰۰)"),
-                        html.Li("پایداری بالاتر در محیط‌های پویا")
-                    ], style={'lineHeight': '2', 'fontSize': '1.05rem'})
-                ], style={'marginBottom': '25px'}),
-                
-                html.Div([
-                    html.H5("🎯 نوآوری‌های کلیدی:"),
-                    html.Ol([
-                        html.Li("معماری سلسله‌مراتبی با ترکیب Trust و MADDPG"),
-                        html.Li("مدیریت صف‌های چندسطحی با اولویت‌بندی دینامیک"),
-                        html.Li("سیستم اعتماد بین UAVها با به‌روزرسانی real-time"),
-                        html.Li("بهینه‌سازی مسیر با در نظر گرفتن محدودیت‌های انرژی"),
-                        html.Li("مکانیزم تطبیق پذیری با تغییرات محیط")
-                    ], style={'lineHeight': '2', 'fontSize': '1.05rem'})
-                ], style={'marginBottom': '25px'}),
-                
-                html.Div([
-                    html.H5("📈 مقایسه با State-of-the-Art:"),
-                    html.Table([
-                        html.Thead(html.Tr([
-                            html.Th('معیار', style={'padding': '12px', 'background': COLORS['primary'], 'color': 'black'}),
-                            html.Th('H-MADRL', style={'padding': '12px', 'background': COLORS['primary'], 'color': 'black'}),
-                            html.Th('MADDPG', style={'padding': '12px', 'background': COLORS['primary'], 'color': 'black'}),
-                            html.Th('DQN', style={'padding': '12px', 'background': COLORS['primary'], 'color': 'black'}),
-                            html.Th('بهبود (%)', style={'padding': '12px', 'background': COLORS['primary'], 'color': 'black'})
-                        ])),
-                        html.Tbody([
-                            html.Tr([
-                                html.Td('Utility', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                                html.Td('0.92', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'color': COLORS['success'], 'fontWeight': 'bold'}),
-                                html.Td('0.78', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                                html.Td('0.65', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                                html.Td('+18%', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'color': COLORS['success']})
-                            ]),
-                            html.Tr([
-                                html.Td('انرژی (J)', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                                html.Td('245', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'color': COLORS['success'], 'fontWeight': 'bold'}),
-                                html.Td('377', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                                html.Td('420', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                                html.Td('-35%', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'color': COLORS['success']})
-                            ]),
-                            html.Tr([
-                                html.Td('تاخیر (s)', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                                html.Td('1.8', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'color': COLORS['success'], 'fontWeight': 'bold'}),
-                                html.Td('3.1', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                                html.Td('3.9', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                                html.Td('-42%', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'color': COLORS['success']})
-                            ]),
-                            html.Tr([
-                                html.Td('Error Rate', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                                html.Td('0.03', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'color': COLORS['success'], 'fontWeight': 'bold'}),
-                                html.Td('0.12', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                                html.Td('0.18', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a'}),
-                                html.Td('-75%', style={'padding': '10px', 'borderBottom': '1px solid #2a2f4a', 'color': COLORS['success']})
-                            ])
-                        ])
-                    ], style={'width': '100%', 'textAlign': 'center', 'marginTop': '15px'})
-                ], style={'marginBottom': '25px'}),
-                
-                html.Div([
-                    html.H5("🔮 کاربردها و چشم‌انداز آینده:"),
-                    html.Div([
-                        html.Div([
-                            html.H6("🚁 کاربردهای فعلی:", style={'color': COLORS['primary']}),
-                            html.Ul([
-                                html.Li("سیستم‌های نظارتی هوشمند"),
-                                html.Li("پردازش edge در شبکه‌های UAV"),
-                                html.Li("عملیات جستجو و نجات"),
-                                html.Li("کشاورزی دقیق")
-                            ])
-                        ], style={'marginBottom': '15px'}),
-                        
-                        html.Div([
-                            html.H6("🔬 توسعه‌های آینده:", style={'color': COLORS['success']}),
-                            html.Ul([
-                                html.Li("یکپارچه‌سازی با شبکه‌های ۵G/۶G"),
-                                html.Li("افزایش مقیاس به ۱۰۰+ UAV"),
-                                html.Li("یادگیری انتقالی بین محیط‌های مختلف"),
-                                html.Li("مکانیزم‌های امنیتی پیشرفته")
-                            ])
-                        ])
-                    ], style={'lineHeight': '1.9'})
-                ])
-            ], style={'lineHeight': '1.8', 'fontSize': '1.05rem'})
-        ], className='card')
-    ])
+    return utility_fig, energy_fig
 
 # ═══════════════════════════════════════════════════════════════════════
 # اجرای برنامه
 # ═══════════════════════════════════════════════════════════════════════
 if __name__ == '__main__':
-    def open_browser():
-        webbrowser.open_new("http://127.0.0.1:8050/")
+    print("\n" + "="*70)
+    print("🚀 داشبورد SkyMind در حال راه‌اندازی...")
+    print("="*70)
+    print("📍 آدرس: http://127.0.0.1:8050")
+    print("💡 برای توقف: Ctrl+C")
+    print("="*70 + "\n")
     
-    print("=" * 70)
-    print("🚀 SkyMind Dashboard در حال اجرا...")
-    print("🌐 آدرس: http://127.0.0.1:8050/")
-    print("=" * 70)
-    
-    Timer(1.5, open_browser).start()
-    app.run(debug=False, host='127.0.0.1', port=8050)  # ✅ اصلاح شد
+    app.run(debug=True, host='127.0.0.1', port=8050)
