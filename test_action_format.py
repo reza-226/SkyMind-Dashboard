@@ -1,35 +1,29 @@
-# test_action_format.py
 import sys
-sys.path.insert(0, 'D:/Payannameh/SkyMind-Dashboard')
-
-from core.env_multi import MultiUAVEnv
+sys.path.append('./environments')
+from uav_mec_env import UAVMECEnvironment
 import numpy as np
 
-env = MultiUAVEnv(n_agents=3)
-obs = env.reset()
+# بدون پارامتر یا با پارامترهای پیش‌فرض
+env = UAVMECEnvironment()
 
-print("=" * 60)
-print("🎮 تست دقیق Action Format")
-print("=" * 60)
+state = env.reset()
+print(f"State shape: {state.shape}")
+print(f"State type: {type(state)}")
 
-# تست شکل‌های مختلف
-test_formats = [
-    ("(3,)", np.random.rand(3)),
-    ("(3, 1)", np.random.rand(3, 1)),
-    ("(3, 2)", np.random.rand(3, 2)),
-    ("(3, 3)", np.random.rand(3, 3)),
-]
+# تست با action format مختلف
+print("\n" + "="*50)
+print("Testing Action Format:")
 
-for name, action in test_formats:
-    try:
-        env.reset()
-        next_obs, reward, done, info = env.step(action)
-        print(f"✅ {name}: موفق!")
-        print(f"   reward: {reward}")
-        print(f"   done: {done}")
-        print(f"   action shape: {action.shape}")
-        break
-    except Exception as e:
-        print(f"❌ {name}: {str(e)[:80]}")
+# فرمت 1: آرایه ساده 7 عنصری
+action = np.array([0, 0.5, 0.3, 0.3, 0.4, 2.0, 1.5], dtype=np.float32)
+print(f"\nAction shape: {action.shape}")
+print(f"Action: {action}")
 
-print("=" * 60)
+try:
+    next_state, reward, done, info = env.step(action)
+    print("✅ Action accepted!")
+    print(f"Reward: {reward:.2f}")
+except Exception as e:
+    print(f"❌ Error: {e}")
+    import traceback
+    traceback.print_exc()

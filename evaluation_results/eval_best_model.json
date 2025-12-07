@@ -1,0 +1,1534 @@
+{
+  "checkpoint": "checkpoints\\maddpg\\best_model.pt",
+  "environment": "simple_tag_v3",
+  "device": "cpu",
+  "statistics": {
+    "num_episodes": 100,
+    "success_rate": 0.42,
+    "agent_reward": {
+      "mean": -20.469942654532034,
+      "std": 21.089697158997723,
+      "min": -82.54207346316004,
+      "max": 0.0,
+      "median": -16.668345753686104
+    },
+    "adversary_reward": {
+      "mean": 5.8,
+      "std": 12.262136844775464,
+      "min": 0.0,
+      "max": 50.0
+    },
+    "total_reward": {
+      "mean": -3.069942654532034,
+      "std": 32.80211250339244
+    },
+    "steps": {
+      "mean": 25.0,
+      "std": 0.0,
+      "min": 25,
+      "max": 25
+    }
+  },
+  "episode_results": [
+    {
+      "episode": 0,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 1,
+      "total_reward": -21.123241759923687,
+      "avg_reward": -5.280810439980922,
+      "agent_reward": -51.12324175992369,
+      "adversary_avg": 10.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 10.0,
+        "adversary_1": 10.0,
+        "adversary_2": 10.0,
+        "agent_0": -51.12324175992369
+      }
+    },
+    {
+      "episode": 2,
+      "total_reward": -36.43885225696026,
+      "avg_reward": -9.109713064240065,
+      "agent_reward": -36.43885225696026,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -36.43885225696026
+      }
+    },
+    {
+      "episode": 3,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 4,
+      "total_reward": 20.0,
+      "avg_reward": 5.0,
+      "agent_reward": -10.0,
+      "adversary_avg": 10.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 10.0,
+        "adversary_1": 10.0,
+        "adversary_2": 10.0,
+        "agent_0": -10.0
+      }
+    },
+    {
+      "episode": 5,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 6,
+      "total_reward": 80.0,
+      "avg_reward": 20.0,
+      "agent_reward": -40.0,
+      "adversary_avg": 40.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 40.0,
+        "adversary_1": 40.0,
+        "adversary_2": 40.0,
+        "agent_0": -40.0
+      }
+    },
+    {
+      "episode": 7,
+      "total_reward": -17.061829671550626,
+      "avg_reward": -4.2654574178876565,
+      "agent_reward": -17.061829671550626,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -17.061829671550626
+      }
+    },
+    {
+      "episode": 8,
+      "total_reward": -19.991035312970634,
+      "avg_reward": -4.997758828242659,
+      "agent_reward": -19.991035312970634,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -19.991035312970634
+      }
+    },
+    {
+      "episode": 9,
+      "total_reward": 60.0,
+      "avg_reward": 15.0,
+      "agent_reward": -30.0,
+      "adversary_avg": 30.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 30.0,
+        "adversary_1": 30.0,
+        "adversary_2": 30.0,
+        "agent_0": -30.0
+      }
+    },
+    {
+      "episode": 10,
+      "total_reward": -36.115574063497014,
+      "avg_reward": -9.028893515874254,
+      "agent_reward": -36.115574063497014,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -36.115574063497014
+      }
+    },
+    {
+      "episode": 11,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 12,
+      "total_reward": -3.0346422043215413,
+      "avg_reward": -0.7586605510803853,
+      "agent_reward": -3.0346422043215413,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -3.0346422043215413
+      }
+    },
+    {
+      "episode": 13,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 14,
+      "total_reward": 54.9145387731879,
+      "avg_reward": 13.728634693296975,
+      "agent_reward": -35.0854612268121,
+      "adversary_avg": 30.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 30.0,
+        "adversary_1": 30.0,
+        "adversary_2": 30.0,
+        "agent_0": -35.0854612268121
+      }
+    },
+    {
+      "episode": 15,
+      "total_reward": -3.5545472987672992,
+      "avg_reward": -0.8886368246918248,
+      "agent_reward": -3.5545472987672992,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -3.5545472987672992
+      }
+    },
+    {
+      "episode": 16,
+      "total_reward": -0.9521052784470141,
+      "avg_reward": -0.23802631961175352,
+      "agent_reward": -0.9521052784470141,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -0.9521052784470141
+      }
+    },
+    {
+      "episode": 17,
+      "total_reward": -13.187588543465365,
+      "avg_reward": -3.2968971358663413,
+      "agent_reward": -13.187588543465365,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -13.187588543465365
+      }
+    },
+    {
+      "episode": 18,
+      "total_reward": 60.0,
+      "avg_reward": 15.0,
+      "agent_reward": -30.0,
+      "adversary_avg": 30.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 30.0,
+        "adversary_1": 30.0,
+        "adversary_2": 30.0,
+        "agent_0": -30.0
+      }
+    },
+    {
+      "episode": 19,
+      "total_reward": -17.217758579360506,
+      "avg_reward": -4.3044396448401265,
+      "agent_reward": -47.217758579360506,
+      "adversary_avg": 10.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 10.0,
+        "adversary_1": 10.0,
+        "adversary_2": 10.0,
+        "agent_0": -47.217758579360506
+      }
+    },
+    {
+      "episode": 20,
+      "total_reward": -21.11880076790451,
+      "avg_reward": -5.2797001919761275,
+      "agent_reward": -21.11880076790451,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -21.11880076790451
+      }
+    },
+    {
+      "episode": 21,
+      "total_reward": 60.0,
+      "avg_reward": 15.0,
+      "agent_reward": -30.0,
+      "adversary_avg": 30.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 30.0,
+        "adversary_1": 30.0,
+        "adversary_2": 30.0,
+        "agent_0": -30.0
+      }
+    },
+    {
+      "episode": 22,
+      "total_reward": -0.39230782441599055,
+      "avg_reward": -0.09807695610399764,
+      "agent_reward": -0.39230782441599055,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -0.39230782441599055
+      }
+    },
+    {
+      "episode": 23,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 24,
+      "total_reward": -57.63511178055296,
+      "avg_reward": -14.40877794513824,
+      "agent_reward": -57.63511178055296,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -57.63511178055296
+      }
+    },
+    {
+      "episode": 25,
+      "total_reward": -56.680280877029475,
+      "avg_reward": -14.170070219257369,
+      "agent_reward": -56.680280877029475,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -56.680280877029475
+      }
+    },
+    {
+      "episode": 26,
+      "total_reward": -1.4644438418199845,
+      "avg_reward": -0.36611096045499614,
+      "agent_reward": -1.4644438418199845,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -1.4644438418199845
+      }
+    },
+    {
+      "episode": 27,
+      "total_reward": -38.223911656649975,
+      "avg_reward": -9.555977914162494,
+      "agent_reward": -38.223911656649975,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -38.223911656649975
+      }
+    },
+    {
+      "episode": 28,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 29,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 30,
+      "total_reward": 20.0,
+      "avg_reward": 5.0,
+      "agent_reward": -10.0,
+      "adversary_avg": 10.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 10.0,
+        "adversary_1": 10.0,
+        "adversary_2": 10.0,
+        "agent_0": -10.0
+      }
+    },
+    {
+      "episode": 31,
+      "total_reward": 89.17561857441638,
+      "avg_reward": 22.293904643604094,
+      "agent_reward": -60.82438142558363,
+      "adversary_avg": 50.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 50.0,
+        "adversary_1": 50.0,
+        "adversary_2": 50.0,
+        "agent_0": -60.82438142558363
+      }
+    },
+    {
+      "episode": 32,
+      "total_reward": -16.77227439479639,
+      "avg_reward": -4.193068598699098,
+      "agent_reward": -16.77227439479639,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -16.77227439479639
+      }
+    },
+    {
+      "episode": 33,
+      "total_reward": -53.62192698247741,
+      "avg_reward": -13.405481745619353,
+      "agent_reward": -53.62192698247741,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -53.62192698247741
+      }
+    },
+    {
+      "episode": 34,
+      "total_reward": -47.075740739002214,
+      "avg_reward": -11.768935184750553,
+      "agent_reward": -47.075740739002214,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -47.075740739002214
+      }
+    },
+    {
+      "episode": 35,
+      "total_reward": -0.403279784174132,
+      "avg_reward": -0.100819946043533,
+      "agent_reward": -0.403279784174132,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -0.403279784174132
+      }
+    },
+    {
+      "episode": 36,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 37,
+      "total_reward": -4.815968151141023,
+      "avg_reward": -1.2039920377852558,
+      "agent_reward": -4.815968151141023,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -4.815968151141023
+      }
+    },
+    {
+      "episode": 38,
+      "total_reward": -5.5217823034929125,
+      "avg_reward": -1.3804455758732281,
+      "agent_reward": -35.52178230349291,
+      "adversary_avg": 10.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 10.0,
+        "adversary_1": 10.0,
+        "adversary_2": 10.0,
+        "agent_0": -35.52178230349291
+      }
+    },
+    {
+      "episode": 39,
+      "total_reward": -37.31195010472877,
+      "avg_reward": -9.327987526182193,
+      "agent_reward": -37.31195010472877,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -37.31195010472877
+      }
+    },
+    {
+      "episode": 40,
+      "total_reward": 11.249069908060132,
+      "avg_reward": 2.812267477015033,
+      "agent_reward": -18.750930091939868,
+      "adversary_avg": 10.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 10.0,
+        "adversary_1": 10.0,
+        "adversary_2": 10.0,
+        "agent_0": -18.750930091939868
+      }
+    },
+    {
+      "episode": 41,
+      "total_reward": 60.0,
+      "avg_reward": 15.0,
+      "agent_reward": -30.0,
+      "adversary_avg": 30.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 30.0,
+        "adversary_1": 30.0,
+        "adversary_2": 30.0,
+        "agent_0": -30.0
+      }
+    },
+    {
+      "episode": 42,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 43,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 44,
+      "total_reward": -22.400647746369582,
+      "avg_reward": -5.600161936592396,
+      "agent_reward": -22.400647746369582,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -22.400647746369582
+      }
+    },
+    {
+      "episode": 45,
+      "total_reward": 79.12191357847857,
+      "avg_reward": 19.780478394619642,
+      "agent_reward": -40.878086421521424,
+      "adversary_avg": 40.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 40.0,
+        "adversary_1": 40.0,
+        "adversary_2": 40.0,
+        "agent_0": -40.878086421521424
+      }
+    },
+    {
+      "episode": 46,
+      "total_reward": -36.489828035221024,
+      "avg_reward": -9.122457008805256,
+      "agent_reward": -36.489828035221024,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -36.489828035221024
+      }
+    },
+    {
+      "episode": 47,
+      "total_reward": -24.0551980528832,
+      "avg_reward": -6.0137995132208,
+      "agent_reward": -24.0551980528832,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -24.0551980528832
+      }
+    },
+    {
+      "episode": 48,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 49,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 50,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 51,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 52,
+      "total_reward": 7.457926536839963,
+      "avg_reward": 1.8644816342099908,
+      "agent_reward": -82.54207346316004,
+      "adversary_avg": 30.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 30.0,
+        "adversary_1": 30.0,
+        "adversary_2": 30.0,
+        "agent_0": -82.54207346316004
+      }
+    },
+    {
+      "episode": 53,
+      "total_reward": -61.30268795383552,
+      "avg_reward": -15.32567198845888,
+      "agent_reward": -61.30268795383552,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -61.30268795383552
+      }
+    },
+    {
+      "episode": 54,
+      "total_reward": -13.61470998788172,
+      "avg_reward": -3.40367749697043,
+      "agent_reward": -13.61470998788172,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -13.61470998788172
+      }
+    },
+    {
+      "episode": 55,
+      "total_reward": 49.503040580982145,
+      "avg_reward": 12.375760145245536,
+      "agent_reward": -70.49695941901786,
+      "adversary_avg": 40.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 40.0,
+        "adversary_1": 40.0,
+        "adversary_2": 40.0,
+        "agent_0": -70.49695941901786
+      }
+    },
+    {
+      "episode": 56,
+      "total_reward": -35.25517998743146,
+      "avg_reward": -8.813794996857865,
+      "agent_reward": -35.25517998743146,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -35.25517998743146
+      }
+    },
+    {
+      "episode": 57,
+      "total_reward": 40.0,
+      "avg_reward": 10.0,
+      "agent_reward": -20.0,
+      "adversary_avg": 20.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 20.0,
+        "adversary_1": 20.0,
+        "adversary_2": 20.0,
+        "agent_0": -20.0
+      }
+    },
+    {
+      "episode": 58,
+      "total_reward": 60.0,
+      "avg_reward": 15.0,
+      "agent_reward": -30.0,
+      "adversary_avg": 30.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 30.0,
+        "adversary_1": 30.0,
+        "adversary_2": 30.0,
+        "agent_0": -30.0
+      }
+    },
+    {
+      "episode": 59,
+      "total_reward": 60.0,
+      "avg_reward": 15.0,
+      "agent_reward": -30.0,
+      "adversary_avg": 30.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 30.0,
+        "adversary_1": 30.0,
+        "adversary_2": 30.0,
+        "agent_0": -30.0
+      }
+    },
+    {
+      "episode": 60,
+      "total_reward": -2.339300252665626,
+      "avg_reward": -0.5848250631664065,
+      "agent_reward": -2.339300252665626,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -2.339300252665626
+      }
+    },
+    {
+      "episode": 61,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 62,
+      "total_reward": -18.12508508711129,
+      "avg_reward": -4.531271271777823,
+      "agent_reward": -18.12508508711129,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -18.12508508711129
+      }
+    },
+    {
+      "episode": 63,
+      "total_reward": -2.009742831031626,
+      "avg_reward": -0.5024357077579065,
+      "agent_reward": -2.009742831031626,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -2.009742831031626
+      }
+    },
+    {
+      "episode": 64,
+      "total_reward": -26.740319970848248,
+      "avg_reward": -6.685079992712062,
+      "agent_reward": -26.740319970848248,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -26.740319970848248
+      }
+    },
+    {
+      "episode": 65,
+      "total_reward": -0.613382695155894,
+      "avg_reward": -0.1533456737889735,
+      "agent_reward": -0.613382695155894,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -0.613382695155894
+      }
+    },
+    {
+      "episode": 66,
+      "total_reward": -36.151085280802974,
+      "avg_reward": -9.037771320200743,
+      "agent_reward": -36.151085280802974,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -36.151085280802974
+      }
+    },
+    {
+      "episode": 67,
+      "total_reward": -41.3936956210007,
+      "avg_reward": -10.348423905250176,
+      "agent_reward": -41.3936956210007,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -41.3936956210007
+      }
+    },
+    {
+      "episode": 68,
+      "total_reward": -34.68478773012672,
+      "avg_reward": -8.67119693253168,
+      "agent_reward": -34.68478773012672,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -34.68478773012672
+      }
+    },
+    {
+      "episode": 69,
+      "total_reward": -24.11247625950271,
+      "avg_reward": -6.0281190648756775,
+      "agent_reward": -24.11247625950271,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -24.11247625950271
+      }
+    },
+    {
+      "episode": 70,
+      "total_reward": -64.79978044561645,
+      "avg_reward": -16.199945111404112,
+      "agent_reward": -64.79978044561645,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -64.79978044561645
+      }
+    },
+    {
+      "episode": 71,
+      "total_reward": -16.56441711257582,
+      "avg_reward": -4.141104278143955,
+      "agent_reward": -16.56441711257582,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -16.56441711257582
+      }
+    },
+    {
+      "episode": 72,
+      "total_reward": -78.31463735734607,
+      "avg_reward": -19.578659339336518,
+      "agent_reward": -78.31463735734607,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -78.31463735734607
+      }
+    },
+    {
+      "episode": 73,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 74,
+      "total_reward": 34.99644235102939,
+      "avg_reward": 8.749110587757347,
+      "agent_reward": -25.00355764897061,
+      "adversary_avg": 20.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 20.0,
+        "adversary_1": 20.0,
+        "adversary_2": 20.0,
+        "agent_0": -25.00355764897061
+      }
+    },
+    {
+      "episode": 75,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 76,
+      "total_reward": -14.096280936985206,
+      "avg_reward": -3.5240702342463015,
+      "agent_reward": -14.096280936985206,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -14.096280936985206
+      }
+    },
+    {
+      "episode": 77,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 78,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 79,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 80,
+      "total_reward": -4.223085290541302,
+      "avg_reward": -1.0557713226353256,
+      "agent_reward": -4.223085290541302,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -4.223085290541302
+      }
+    },
+    {
+      "episode": 81,
+      "total_reward": 71.72063961919213,
+      "avg_reward": 17.930159904798032,
+      "agent_reward": -48.27936038080788,
+      "adversary_avg": 40.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 40.0,
+        "adversary_1": 40.0,
+        "adversary_2": 40.0,
+        "agent_0": -48.27936038080788
+      }
+    },
+    {
+      "episode": 82,
+      "total_reward": -16.45327903630558,
+      "avg_reward": -4.113319759076395,
+      "agent_reward": -16.45327903630558,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -16.45327903630558
+      }
+    },
+    {
+      "episode": 83,
+      "total_reward": -42.560047210493615,
+      "avg_reward": -10.640011802623404,
+      "agent_reward": -42.560047210493615,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -42.560047210493615
+      }
+    },
+    {
+      "episode": 84,
+      "total_reward": -12.62533566814275,
+      "avg_reward": -3.1563339170356874,
+      "agent_reward": -12.62533566814275,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -12.62533566814275
+      }
+    },
+    {
+      "episode": 85,
+      "total_reward": -7.167211384390964,
+      "avg_reward": -1.791802846097741,
+      "agent_reward": -7.167211384390964,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -7.167211384390964
+      }
+    },
+    {
+      "episode": 86,
+      "total_reward": -26.505405909430177,
+      "avg_reward": -6.626351477357544,
+      "agent_reward": -26.505405909430177,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -26.505405909430177
+      }
+    },
+    {
+      "episode": 87,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 88,
+      "total_reward": -0.015444790726607538,
+      "avg_reward": -0.0038611976816518845,
+      "agent_reward": -0.015444790726607538,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -0.015444790726607538
+      }
+    },
+    {
+      "episode": 89,
+      "total_reward": -30.291727368302237,
+      "avg_reward": -7.572931842075559,
+      "agent_reward": -30.291727368302237,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -30.291727368302237
+      }
+    },
+    {
+      "episode": 90,
+      "total_reward": -2.9967941633850494,
+      "avg_reward": -0.7491985408462624,
+      "agent_reward": -2.9967941633850494,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -2.9967941633850494
+      }
+    },
+    {
+      "episode": 91,
+      "total_reward": -26.76447349207482,
+      "avg_reward": -6.691118373018705,
+      "agent_reward": -26.76447349207482,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -26.76447349207482
+      }
+    },
+    {
+      "episode": 92,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 93,
+      "total_reward": -1.714888729975993,
+      "avg_reward": -0.42872218249399824,
+      "agent_reward": -1.714888729975993,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -1.714888729975993
+      }
+    },
+    {
+      "episode": 94,
+      "total_reward": 45.86390695488454,
+      "avg_reward": 11.465976738721135,
+      "agent_reward": -44.13609304511546,
+      "adversary_avg": 30.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 30.0,
+        "adversary_1": 30.0,
+        "adversary_2": 30.0,
+        "agent_0": -44.13609304511546
+      }
+    },
+    {
+      "episode": 95,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 96,
+      "total_reward": -36.9014717646639,
+      "avg_reward": -9.225367941165976,
+      "agent_reward": -36.9014717646639,
+      "adversary_avg": 0.0,
+      "success": false,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": -36.9014717646639
+      }
+    },
+    {
+      "episode": 97,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 98,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    },
+    {
+      "episode": 99,
+      "total_reward": 0.0,
+      "avg_reward": 0.0,
+      "agent_reward": 0.0,
+      "adversary_avg": 0.0,
+      "success": true,
+      "steps": 25,
+      "rewards_per_agent": {
+        "adversary_0": 0.0,
+        "adversary_1": 0.0,
+        "adversary_2": 0.0,
+        "agent_0": 0.0
+      }
+    }
+  ]
+}

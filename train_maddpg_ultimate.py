@@ -228,11 +228,11 @@ class MADDPGAgent:
 def train_maddpg(
     env_name='simple_tag_v3',
     env_kwargs=None,
-    max_episodes=300,
-    batch_size=64,
-    buffer_size=100000,
+    max_episodes=2000,  # ✅ افزایش یافت: 1500 → 2000
+    batch_size=128,  # ✅ افزایش یافت: 64 → 128
+    buffer_size=150000,  # ✅ افزایش یافت: 100k → 150k
     lr_actor=1e-4,
-    lr_critic=1e-3,
+    lr_critic=5e-4,  # ✅ کاهش یافت: 0.001 → 0.0005
     gamma=0.95,
     tau=0.01,
     noise_std=0.5,
@@ -250,19 +250,30 @@ def train_maddpg(
     device='cpu'
 ):
     """
-    Train MADDPG on PettingZoo environment
+    Train MADDPG on PettingZoo environment with OPTIMIZED PARAMETERS
+    
+    ✅ تغییرات اعمال‌شده:
+    - max_episodes: 800 → 1500 (یادگیری بیشتر)
+    - batch_size: 64 → 128 (گرادیان‌های پایدارتر)
+    - lr_critic: 0.001 → 0.0005 (پایداری بیشتر)
+    - buffer_size: 100k → 150k (تجربیات بیشتر)
     """
     
     # Setup logging
     logger = setup_logging(log_file)
     
     logger.info("="*80)
-    logger.info("[MADDPG] Training Started")
+    logger.info("[MADDPG] Training Started - OPTIMIZED VERSION")
     logger.info("="*80)
     logger.info(f"Environment: {env_name}")
-    logger.info(f"Env kwargs: {env_kwargs}")
-    logger.info(f"Max episodes: {max_episodes}")
+    logger.info(f"Max episodes: {max_episodes} ✅ (افزایش‌یافته)")
+    logger.info(f"Batch size: {batch_size} ✅ (افزایش‌یافته)")
+    logger.info(f"Buffer size: {buffer_size} ✅ (افزایش‌یافته)")
+    logger.info(f"LR Critic: {lr_critic} ✅ (کاهش‌یافته)")
+    logger.info(f"LR Actor: {lr_actor}")
+    logger.info(f"Gamma: {gamma}, Tau: {tau}")
     logger.info(f"Pretrained model: {load_pretrained if load_pretrained else 'None (training from scratch)'}")
+    logger.info("="*80)
     
     # Load environment
     if env_kwargs is None:
@@ -328,7 +339,7 @@ def train_maddpg(
             total_action_dim=total_action_dim,
             hidden_dim=hidden_dim,
             lr_actor=lr_actor,
-            lr_critic=lr_critic,
+            lr_critic=lr_critic,  # ✅ استفاده از مقدار جدید (کمتر)
             gamma=gamma,
             tau=tau,
             device=device
@@ -357,16 +368,16 @@ def train_maddpg(
     current_noise = noise_std
     
     training_history = {
-        'episodes': [],
-        'rewards': [],
-        'actor_losses': [],
-        'critic_losses': [],
-        'noise_std': []
+        'episode': [],
+        'reward': [],
+        'critic_loss': [],
+        'noise_std': [],
+        'buffer_size': []
     }
     
     # Training loop
     logger.info("="*80)
-    logger.info("[TRAIN] Starting training loop...")
+    logger.info("[TRAIN] Starting training loop with OPTIMIZED PARAMETERS...")
     logger.info("="*80)
     
     for episode in range(max_episodes):
@@ -427,15 +438,17 @@ def train_maddpg(
         avg_reward = np.mean(list(episode_reward.values()))
         episode_rewards.append(avg_reward)
         
-        training_history['episodes'].append(episode)
-        training_history['rewards'].append(avg_reward)
-        training_history['actor_losses'].append(np.mean(actor_losses) if actor_losses else 0)
-        training_history['critic_losses'].append(np.mean(critic_losses) if critic_losses else 0)
+        training_history['episode'].append(episode + 1)
+        training_history['reward'].append(avg_reward)
+        training_history['critic_loss'].append(np.mean(critic_losses) if critic_losses else 0)
         training_history['noise_std'].append(current_noise)
+        training_history['buffer_size'].append(len(replay_buffer))
         
         if (episode + 1) % log_interval == 0:
+            avg_critic_loss = np.mean(critic_losses) if critic_losses else 0
             logger.info(f"Episode {episode+1}/{max_episodes} | "
                        f"Avg Reward: {avg_reward:.2f} | "
+                       f"Critic Loss: {avg_critic_loss:.2f} | "
                        f"Noise: {current_noise:.4f} | "
                        f"Buffer: {len(replay_buffer)}")
         
@@ -446,7 +459,7 @@ def train_maddpg(
             os.makedirs(best_model_dir, exist_ok=True)
             for agent in agents:
                 agent.save(best_model_dir)
-            logger.info(f"✓ New best model saved! Reward: {best_reward:.2f}")
+            logger.info(f"✓ New best model saved! Reward: {best_reward:.2f} at episode {episode+1}")
         
         # Periodic save
         if (episode + 1) % save_interval == 0:
@@ -464,13 +477,30 @@ def train_maddpg(
     for agent in agents:
         agent.save(final_model_dir)
     
-    # Save training history to JSON
+    # Save training history to JSON with Dashboard format
     history_path = os.path.join(model_dir, 'training_history.json')
+    
+    # تبدیل به فرمت Dashboard (episode به عنوان key)
+    formatted_history = {}
+    for i in range(len(training_history['episode'])):
+        ep_num = str(training_history['episode'][i])
+        formatted_history[ep_num] = {
+            'episode': training_history['episode'][i],
+            'avg_reward': training_history['reward'][i],
+            'critic_loss': training_history['critic_loss'][i],
+            'noise_std': training_history['noise_std'][i],
+            'buffer_size': training_history['buffer_size'][i]
+        }
+    
     with open(history_path, 'w') as f:
-        json.dump(training_history, f, indent=2)
+        json.dump(formatted_history, f, indent=2)
+    
+    logger.info(f"✓ Training history saved: {history_path}")
+    logger.info(f"✓ Total episodes saved: {len(formatted_history)}")
     
     logger.info("="*80)
-    logger.info("[COMPLETE] Training finished!")
+    logger.info("[COMPLETE] Training finished! 🎉")
+    logger.info(f"✓ Total episodes: {max_episodes}")
     logger.info(f"✓ Best reward: {best_reward:.2f}")
     logger.info(f"✓ Final model saved to: {final_model_dir}")
     logger.info(f"✓ Training history saved to: {history_path}")
@@ -491,7 +521,19 @@ def train_maddpg(
 # ============================================================================
 
 if __name__ == "__main__":
+    logger = setup_logging('logs/training.log')
+    
+    logger.info("="*80)
+    logger.info("[START] MADDPG Training - Optimized Parameters")
+    logger.info("="*80)
+    
     results = train_maddpg()
-    print(f"\n✅ Training completed!")
-    print(f"📊 Best reward: {results['best_reward']:.2f}")
+    
+    print("\n" + "="*80)
+    print("✅ Training completed successfully!")
+    print("="*80)
+    print(f"📊 Best reward achieved: {results['best_reward']:.2f}")
+    print(f"📈 Total episodes trained: {results['total_episodes']}")
     print(f"📁 Models saved to: {results['model_dir']}")
+    print(f"📄 Training history: {os.path.join(results['model_dir'], 'training_history.json')}")
+    print("="*80)

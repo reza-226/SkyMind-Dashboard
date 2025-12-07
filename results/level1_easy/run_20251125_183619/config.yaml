@@ -1,0 +1,30 @@
+batch_size: 256
+buffer_size: 50000
+difficulty: easy
+episodes: 1000
+epsilon_decay: 0.995
+epsilon_end: 0.05
+epsilon_start: 1.0
+gamma: 0.95
+lr_actor: 0.0001
+lr_critic: 0.001
+max_cycles: 50
+monitor: !!python/object:system_monitor.ThresholdConfig
+  actor_loss_critical: null
+  check_interval: 100
+  critic_loss_critical: null
+  drift_critic_critical: null
+  lower_bound: null
+  metric_name: critic_loss
+  min_episodes: 300
+  patience: 5
+  saturation_critical: null
+  success_rate_critical: null
+  upper_bound: 8.0
+  window_size: 100
+n_adversaries: 2
+n_agents: 3
+tau: 0.01
+threshold_reward: -18.0
+update_every: 4
+warmup_episodes: 100

@@ -1,0 +1,223 @@
+# experiments/scenarios_config.yaml
+metadata:
+  version: "1.0.0"
+  description: "Multi-Tier Computation Offloading Scenarios"
+  date_created: "2025-11-27"
+
+# =====================================
+# تعریف سطوح محاسباتی (4 Tier)
+# =====================================
+computing_tiers:
+  ground:
+    name: "Ground Computing"
+    description: "محاسبات محلی روی UAV"
+    specs:
+      processing_capacity: 2.5          # GHz
+      memory_capacity: 4.0              # GB
+      energy_per_flop: 3.0e-9           # Joule/FLOP
+      idle_power: 0.5                   # Watt
+      active_power: 2.0                 # Watt
+      transmission_power: 0.8           # Watt
+      communication_delay: 0.005        # seconds
+      reliability: 0.90
+      distance_range: [0, 50]           # meters
+      bandwidth: 20.0                   # Mbps
+      flight_power: 5.0                 # Watt
+      uav_velocity: 10.0                # m/s
+      altitude_range: [50, 150]         # meters
+
+  edge:
+    name: "Edge Computing"
+    description: "محاسبات لبه شبکه (Ground Station)"
+    specs:
+      processing_capacity: 10.0         # GHz
+      memory_capacity: 16.0             # GB
+      energy_per_flop: 1.5e-9           # Joule/FLOP
+      idle_power: 2.0                   # Watt
+      active_power: 8.0                 # Watt
+      transmission_power: 1.5           # Watt
+      communication_delay: 0.015        # seconds
+      reliability: 0.95
+      distance_range: [50, 500]         # meters
+      bandwidth: 100.0                  # Mbps
+
+  fog:
+    name: "Fog Computing"
+    description: "محاسبات لایه میانی"
+    specs:
+      processing_capacity: 30.0         # GHz
+      memory_capacity: 64.0             # GB
+      energy_per_flop: 0.8e-9           # Joule/FLOP
+      idle_power: 5.0                   # Watt
+      active_power: 20.0                # Watt
+      transmission_power: 3.0           # Watt
+      communication_delay: 0.050        # seconds
+      reliability: 0.97
+      distance_range: [500, 2000]       # meters
+      bandwidth: 500.0                  # Mbps
+
+  cloud:
+    name: "Cloud Computing"
+    description: "محاسبات ابری متمرکز"
+    specs:
+      processing_capacity: 100.0        # GHz
+      memory_capacity: 256.0            # GB
+      energy_per_flop: 0.3e-9           # Joule/FLOP
+      idle_power: 10.0                  # Watt
+      active_power: 50.0                # Watt
+      transmission_power: 5.0           # Watt
+      communication_delay: 0.150        # seconds
+      reliability: 0.99
+      distance_range: [2000, 10000]     # meters
+      bandwidth: 1000.0                 # Mbps
+
+# =====================================
+# تعریف سطوح پیچیدگی (3 Level)
+# =====================================
+complexity_levels:
+  easy:
+    name: "Easy"
+    description: "محیط ساده با تعداد کم Task و UAV"
+    environment:
+      num_uavs: 3
+      num_obstacles: 2
+      num_tasks: 10
+      grid_size: [1000, 1000]           # meters
+      obstacle_sizes: [50, 100]         # meters
+    tasks:
+      computation_load: [1.0, 5.0]      # GigaFLOPS
+      data_size: [1.0, 10.0]            # MB
+      deadline: [5.0, 15.0]             # seconds
+      priority: [1, 3]                  # low to high
+
+  medium:
+    name: "Medium"
+    description: "محیط متوسط با تعداد معقول Task و UAV"
+    environment:
+      num_uavs: 5
+      num_obstacles: 4
+      num_tasks: 20
+      grid_size: [2000, 2000]           # meters
+      obstacle_sizes: [100, 200]        # meters
+    tasks:
+      computation_load: [5.0, 20.0]     # GigaFLOPS
+      data_size: [10.0, 50.0]           # MB
+      deadline: [10.0, 30.0]            # seconds
+      priority: [1, 5]                  # low to high
+
+  hard:
+    name: "Hard"
+    description: "محیط پیچیده با تعداد زیاد Task و UAV"
+    environment:
+      num_uavs: 8
+      num_obstacles: 6
+      num_tasks: 35
+      grid_size: [3000, 3000]           # meters
+      obstacle_sizes: [150, 300]        # meters
+    tasks:
+      computation_load: [20.0, 100.0]   # GigaFLOPS
+      data_size: [50.0, 200.0]          # MB
+      deadline: [15.0, 50.0]            # seconds
+      priority: [1, 10]                 # low to high
+
+# =====================================
+# تنظیمات آموزش
+# =====================================
+training_config:
+  episodes_per_scenario: 4000
+  agent:
+    lr_actor: 0.0001
+    lr_critic: 0.001
+    gamma: 0.95
+    tau: 0.01
+    buffer_size: 100000
+    batch_size: 64
+  exploration:
+    initial_noise: 0.5
+    noise_decay: 0.995
+    min_noise: 0.01
+  checkpoints:
+    save_interval: 500
+    best_model_threshold: 0.85
+
+# =====================================
+# تعریف 12 سناریو (4 Tier × 3 Complexity)
+# =====================================
+scenarios:
+  - id: "S01"
+    tier: "ground"
+    complexity: "easy"
+    active: true
+
+  - id: "S02"
+    tier: "ground"
+    complexity: "medium"
+    active: true
+
+  - id: "S03"
+    tier: "ground"
+    complexity: "hard"
+    active: true
+
+  - id: "S04"
+    tier: "edge"
+    complexity: "easy"
+    active: true
+
+  - id: "S05"
+    tier: "edge"
+    complexity: "medium"
+    active: true
+
+  - id: "S06"
+    tier: "edge"
+    complexity: "hard"
+    active: true
+
+  - id: "S07"
+    tier: "fog"
+    complexity: "easy"
+    active: true
+
+  - id: "S08"
+    tier: "fog"
+    complexity: "medium"
+    active: true
+
+  - id: "S09"
+    tier: "fog"
+    complexity: "hard"
+    active: true
+
+  - id: "S10"
+    tier: "cloud"
+    complexity: "easy"
+    active: true
+
+  - id: "S11"
+    tier: "cloud"
+    complexity: "medium"
+    active: true
+
+  - id: "S12"
+    tier: "cloud"
+    complexity: "hard"
+    active: true
+
+# =====================================
+# تنظیمات خروجی
+# =====================================
+output:
+  base_dir: "results/multi_tier_evaluation"
+  save_plots: true
+  save_checkpoints: true
+  save_logs: true
+  formats:
+    - "json"
+    - "csv"
+    - "markdown"
+
+logging:
+  level: "INFO"
+  save_to_file: true
+  console_output: true

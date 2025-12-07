@@ -1,5 +1,5 @@
 """
-collision_checker_patch.py
+core/collision_checker_patch.py
 =======================
 اضافه کردن متدهای سازگار با MultiUAVEnv به CollisionChecker
 + اصلاح is_safe_position برای پشتیبانی 3D

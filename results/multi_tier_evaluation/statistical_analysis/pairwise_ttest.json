@@ -1,0 +1,154 @@
+{
+  "latency": {
+    "ground vs edge": {
+      "t-statistic": 2.1366331548466837,
+      "p-value": 0.0994633754868105,
+      "cohens_d": 1.7445536656291378,
+      "significant": false
+    },
+    "ground vs fog": {
+      "t-statistic": 2.5701015497391424,
+      "p-value": 0.061972129442739984,
+      "cohens_d": 2.09847912799906,
+      "significant": false
+    },
+    "ground vs cloud": {
+      "t-statistic": 2.4081127879415685,
+      "p-value": 0.07370530892398254,
+      "cohens_d": 1.9662158578426245,
+      "significant": false
+    },
+    "edge vs fog": {
+      "t-statistic": 1.4291631719527655,
+      "p-value": 0.22616654668083438,
+      "cohens_d": 1.1669068434872567,
+      "significant": false
+    },
+    "edge vs cloud": {
+      "t-statistic": 0.821797873993895,
+      "p-value": 0.4573525917027711,
+      "cohens_d": 0.6709951543296895,
+      "significant": false
+    },
+    "fog vs cloud": {
+      "t-statistic": -1.9555135950199782,
+      "p-value": 0.12218170991228282,
+      "cohens_d": -1.596670164291498,
+      "significant": false
+    }
+  },
+  "energy": {
+    "ground vs edge": {
+      "t-statistic": 0.5281644757520078,
+      "p-value": 0.6253292811167107,
+      "cohens_d": 0.4312444886189991,
+      "significant": false
+    },
+    "ground vs fog": {
+      "t-statistic": 0.6796497105994319,
+      "p-value": 0.5340237837796356,
+      "cohens_d": 0.5549316649329546,
+      "significant": false
+    },
+    "ground vs cloud": {
+      "t-statistic": 0.1262812903056462,
+      "p-value": 0.9056023774495054,
+      "cohens_d": 0.10310824176970171,
+      "significant": false
+    },
+    "edge vs fog": {
+      "t-statistic": 0.2021846352395361,
+      "p-value": 0.8496392269745572,
+      "cohens_d": 0.16508306338920065,
+      "significant": false
+    },
+    "edge vs cloud": {
+      "t-statistic": -0.7336042677137741,
+      "p-value": 0.5038688285559528,
+      "cohens_d": -0.5989853763422848,
+      "significant": false
+    },
+    "fog vs cloud": {
+      "t-statistic": -1.1980655849558197,
+      "p-value": 0.2970247216805466,
+      "cohens_d": -0.978216453843603,
+      "significant": false
+    }
+  },
+  "success_rate": {
+    "ground vs edge": {
+      "t-statistic": -1.7250963224990998,
+      "p-value": 0.15959542902444537,
+      "cohens_d": -1.4085352490915086,
+      "significant": false
+    },
+    "ground vs fog": {
+      "t-statistic": -2.452243718775796,
+      "p-value": 0.07027533689597655,
+      "cohens_d": -2.0022486119819294,
+      "significant": false
+    },
+    "ground vs cloud": {
+      "t-statistic": -3.1278083687515688,
+      "p-value": 0.03525974020195502,
+      "cohens_d": -2.5538448388827835,
+      "significant": true
+    },
+    "edge vs fog": {
+      "t-statistic": -0.8071084394123565,
+      "p-value": 0.4648597402834512,
+      "cohens_d": -0.6590012812181019,
+      "significant": false
+    },
+    "edge vs cloud": {
+      "t-statistic": -1.5796110878058292,
+      "p-value": 0.18934436577826902,
+      "cohens_d": -1.2897470523889853,
+      "significant": false
+    },
+    "fog vs cloud": {
+      "t-statistic": -0.7890543106509534,
+      "p-value": 0.4742183271163984,
+      "cohens_d": -0.6442601468127872,
+      "significant": false
+    }
+  },
+  "throughput": {
+    "ground vs edge": {
+      "t-statistic": -8152386140832990.0,
+      "p-value": 1.3583518618239923e-63,
+      "cohens_d": -6656395410392716.0,
+      "significant": true
+    },
+    "ground vs fog": {
+      "t-statistic": -Infinity,
+      "p-value": 0.0,
+      "cohens_d": 0.0,
+      "significant": true
+    },
+    "ground vs cloud": {
+      "t-statistic": -291.9999999999997,
+      "p-value": 8.252506755330587e-10,
+      "cohens_d": -238.4170016308958,
+      "significant": true
+    },
+    "edge vs fog": {
+      "t-statistic": -2.0380965352082468e+16,
+      "p-value": 3.477380766269407e-65,
+      "cohens_d": -1.6640988525981784e+16,
+      "significant": true
+    },
+    "edge vs cloud": {
+      "t-statistic": -267.9999999999998,
+      "p-value": 1.1629787098362088e-09,
+      "cohens_d": -218.8210836886304,
+      "significant": true
+    },
+    "fog vs cloud": {
+      "t-statistic": -207.99999999999983,
+      "p-value": 3.205021829715686e-09,
+      "cohens_d": -169.8312888329669,
+      "significant": true
+    }
+  }
+}

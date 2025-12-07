@@ -1,0 +1,2438 @@
+{
+  "ground": {
+    "scalability": 0.0,
+    "energy_mean": 0,
+    "energy_std": 0,
+    "throughput": 0,
+    "avg_latency": NaN,
+    "raw_results": [
+      {
+        "task_id": 0,
+        "success": false,
+        "latency": 3012.5450343203506,
+        "energy": 3.012545034320351
+      },
+      {
+        "task_id": 1,
+        "success": false,
+        "latency": 4777.00638850067,
+        "energy": 4.77700638850067
+      },
+      {
+        "task_id": 2,
+        "success": false,
+        "latency": 3293.468166687733,
+        "energy": 3.2934681666877332
+      },
+      {
+        "task_id": 3,
+        "success": false,
+        "latency": 4765.859235106101,
+        "energy": 4.765859235106101
+      },
+      {
+        "task_id": 4,
+        "success": false,
+        "latency": 1826.7374395069814,
+        "energy": 1.8267374395069815
+      },
+      {
+        "task_id": 5,
+        "success": false,
+        "latency": 1072.887302606199,
+        "energy": 1.072887302606199
+      },
+      {
+        "task_id": 6,
+        "success": false,
+        "latency": 3622.8905415229688,
+        "energy": 3.6228905415229686
+      },
+      {
+        "task_id": 7,
+        "success": false,
+        "latency": 4257.873930355743,
+        "energy": 4.257873930355743
+      },
+      {
+        "task_id": 8,
+        "success": false,
+        "latency": 2393.3464178127892,
+        "energy": 2.3933464178127895
+      },
+      {
+        "task_id": 9,
+        "success": false,
+        "latency": 4213.923721539395,
+        "energy": 4.213923721539395
+      },
+      {
+        "task_id": 10,
+        "success": false,
+        "latency": 3274.0811349998335,
+        "energy": 3.2740811349998333
+      },
+      {
+        "task_id": 11,
+        "success": false,
+        "latency": 2000.0657968644186,
+        "energy": 2.0000657968644187
+      },
+      {
+        "task_id": 12,
+        "success": false,
+        "latency": 1954.3874391613608,
+        "energy": 1.9543874391613607
+      },
+      {
+        "task_id": 13,
+        "success": false,
+        "latency": 1412.4954753437305,
+        "energy": 1.4124954753437304
+      },
+      {
+        "task_id": 14,
+        "success": false,
+        "latency": 2280.198404122447,
+        "energy": 2.280198404122447
+      },
+      {
+        "task_id": 15,
+        "success": false,
+        "latency": 4621.527905677055,
+        "energy": 4.621527905677055
+      },
+      {
+        "task_id": 16,
+        "success": false,
+        "latency": 3707.079617697213,
+        "energy": 3.707079617697213
+      },
+      {
+        "task_id": 17,
+        "success": false,
+        "latency": 1366.8165890339244,
+        "energy": 1.3668165890339243
+      },
+      {
+        "task_id": 18,
+        "success": false,
+        "latency": 4009.49811775072,
+        "energy": 4.00949811775072
+      },
+      {
+        "task_id": 19,
+        "success": false,
+        "latency": 4723.71642274917,
+        "energy": 4.72371642274917
+      },
+      {
+        "task_id": 20,
+        "success": false,
+        "latency": 2766.122005493508,
+        "energy": 2.766122005493508
+      },
+      {
+        "task_id": 21,
+        "success": false,
+        "latency": 4874.607775896539,
+        "energy": 4.874607775896539
+      },
+      {
+        "task_id": 22,
+        "success": false,
+        "latency": 1404.490704491161,
+        "energy": 1.404490704491161
+      },
+      {
+        "task_id": 23,
+        "success": false,
+        "latency": 2586.6064078170075,
+        "energy": 2.5866064078170075
+      },
+      {
+        "task_id": 24,
+        "success": false,
+        "latency": 1339.3508563407677,
+        "energy": 1.3393508563407677
+      },
+      {
+        "task_id": 25,
+        "success": false,
+        "latency": 4521.439874553667,
+        "energy": 4.521439874553668
+      },
+      {
+        "task_id": 26,
+        "success": false,
+        "latency": 4013.5127410357663,
+        "energy": 4.0135127410357665
+      },
+      {
+        "task_id": 27,
+        "success": false,
+        "latency": 2511.950360489018,
+        "energy": 2.511950360489018
+      },
+      {
+        "task_id": 28,
+        "success": false,
+        "latency": 1444.7899292246054,
+        "energy": 1.4447899292246054
+      },
+      {
+        "task_id": 29,
+        "success": false,
+        "latency": 1225.2131027273495,
+        "energy": 1.2252131027273494
+      },
+      {
+        "task_id": 30,
+        "success": false,
+        "latency": 3976.846627773192,
+        "energy": 3.9768466277731918
+      },
+      {
+        "task_id": 31,
+        "success": false,
+        "latency": 2499.482318094816,
+        "energy": 2.4994823180948162
+      },
+      {
+        "task_id": 32,
+        "success": false,
+        "latency": 2745.343326426224,
+        "energy": 2.745343326426224
+      },
+      {
+        "task_id": 33,
+        "success": false,
+        "latency": 1172.6396478023044,
+        "energy": 1.1726396478023045
+      },
+      {
+        "task_id": 34,
+        "success": false,
+        "latency": 4676.462861114638,
+        "energy": 4.676462861114638
+      },
+      {
+        "task_id": 35,
+        "success": false,
+        "latency": 3092.3913766805954,
+        "energy": 3.0923913766805953
+      },
+      {
+        "task_id": 36,
+        "success": false,
+        "latency": 4983.325500117482,
+        "energy": 4.983325500117482
+      },
+      {
+        "task_id": 37,
+        "success": false,
+        "latency": 1181.7855213658315,
+        "energy": 1.1817855213658315
+      },
+      {
+        "task_id": 38,
+        "success": false,
+        "latency": 2822.6270111428516,
+        "energy": 2.8226270111428517
+      },
+      {
+        "task_id": 39,
+        "success": false,
+        "latency": 2553.0735359594887,
+        "energy": 2.5530735359594887
+      },
+      {
+        "task_id": 40,
+        "success": false,
+        "latency": 4897.579230664666,
+        "energy": 4.897579230664666
+      },
+      {
+        "task_id": 41,
+        "success": false,
+        "latency": 2119.054028675783,
+        "energy": 2.119054028675783
+      },
+      {
+        "task_id": 42,
+        "success": false,
+        "latency": 1532.7405008949988,
+        "energy": 1.5327405008949988
+      },
+      {
+        "task_id": 43,
+        "success": false,
+        "latency": 3902.8780335534398,
+        "energy": 3.90287803355344
+      },
+      {
+        "task_id": 44,
+        "success": false,
+        "latency": 4464.255558001634,
+        "energy": 4.464255558001634
+      },
+      {
+        "task_id": 45,
+        "success": false,
+        "latency": 4110.409134940902,
+        "energy": 4.110409134940902
+      },
+      {
+        "task_id": 46,
+        "success": false,
+        "latency": 3376.5228614085404,
+        "energy": 3.3765228614085405
+      },
+      {
+        "task_id": 47,
+        "success": false,
+        "latency": 3276.3258766629906,
+        "energy": 3.2763258766629906
+      },
+      {
+        "task_id": 48,
+        "success": false,
+        "latency": 2093.628287722825,
+        "energy": 2.093628287722825
+      },
+      {
+        "task_id": 49,
+        "success": false,
+        "latency": 3137.3851001178523,
+        "energy": 3.1373851001178523
+      },
+      {
+        "task_id": 50,
+        "success": false,
+        "latency": 4075.949660722042,
+        "energy": 4.075949660722042
+      },
+      {
+        "task_id": 51,
+        "success": false,
+        "latency": 1964.3393293185275,
+        "energy": 1.9643393293185274
+      },
+      {
+        "task_id": 52,
+        "success": false,
+        "latency": 3424.69853780352,
+        "energy": 3.42469853780352
+      },
+      {
+        "task_id": 53,
+        "success": false,
+        "latency": 2432.650872131362,
+        "energy": 2.432650872131362
+      },
+      {
+        "task_id": 54,
+        "success": false,
+        "latency": 2904.8427871560566,
+        "energy": 2.9048427871560567
+      },
+      {
+        "task_id": 55,
+        "success": false,
+        "latency": 3207.627355097942,
+        "energy": 3.207627355097942
+      },
+      {
+        "task_id": 56,
+        "success": false,
+        "latency": 3359.823588550544,
+        "energy": 3.3598235885505443
+      },
+      {
+        "task_id": 57,
+        "success": false,
+        "latency": 3481.238205413859,
+        "energy": 3.4812382054138586
+      },
+      {
+        "task_id": 58,
+        "success": false,
+        "latency": 3469.054848389168,
+        "energy": 3.469054848389168
+      },
+      {
+        "task_id": 59,
+        "success": false,
+        "latency": 2568.9761803989295,
+        "energy": 2.5689761803989293
+      },
+      {
+        "task_id": 60,
+        "success": false,
+        "latency": 3055.957956639243,
+        "energy": 3.055957956639243
+      },
+      {
+        "task_id": 61,
+        "success": false,
+        "latency": 3094.4091040600447,
+        "energy": 3.0944091040600448
+      },
+      {
+        "task_id": 62,
+        "success": false,
+        "latency": 4706.350500645977,
+        "energy": 4.706350500645978
+      },
+      {
+        "task_id": 63,
+        "success": false,
+        "latency": 4920.130301141909,
+        "energy": 4.920130301141908
+      },
+      {
+        "task_id": 64,
+        "success": false,
+        "latency": 3318.599737886954,
+        "energy": 3.3185997378869536
+      },
+      {
+        "task_id": 65,
+        "success": false,
+        "latency": 1512.1833558310898,
+        "energy": 1.5121833558310898
+      },
+      {
+        "task_id": 66,
+        "success": false,
+        "latency": 4587.153639624047,
+        "energy": 4.587153639624047
+      },
+      {
+        "task_id": 67,
+        "success": false,
+        "latency": 3407.741582163841,
+        "energy": 3.407741582163841
+      },
+      {
+        "task_id": 68,
+        "success": false,
+        "latency": 2114.3613561278344,
+        "energy": 2.1143613561278345
+      },
+      {
+        "task_id": 69,
+        "success": false,
+        "latency": 3137.694014930092,
+        "energy": 3.137694014930092
+      },
+      {
+        "task_id": 70,
+        "success": false,
+        "latency": 3013.6690834194274,
+        "energy": 3.0136690834194275
+      },
+      {
+        "task_id": 71,
+        "success": false,
+        "latency": 2924.5815762251727,
+        "energy": 2.924581576225173
+      },
+      {
+        "task_id": 72,
+        "success": false,
+        "latency": 4683.4896021272525,
+        "energy": 4.683489602127253
+      },
+      {
+        "task_id": 73,
+        "success": false,
+        "latency": 1338.0680307227278,
+        "energy": 1.3380680307227277
+      },
+      {
+        "task_id": 74,
+        "success": false,
+        "latency": 2481.888411165528,
+        "energy": 2.481888411165528
+      },
+      {
+        "task_id": 75,
+        "success": false,
+        "latency": 3125.0630158941362,
+        "energy": 3.125063015894136
+      },
+      {
+        "task_id": 76,
+        "success": false,
+        "latency": 2009.747777376083,
+        "energy": 2.009747777376083
+      },
+      {
+        "task_id": 77,
+        "success": false,
+        "latency": 3998.4649280343497,
+        "energy": 3.9984649280343496
+      },
+      {
+        "task_id": 78,
+        "success": false,
+        "latency": 3130.4690658200925,
+        "energy": 3.1304690658200927
+      },
+      {
+        "task_id": 79,
+        "success": false,
+        "latency": 1729.1355139038321,
+        "energy": 1.7291355139038322
+      },
+      {
+        "task_id": 80,
+        "success": false,
+        "latency": 2309.9894087116586,
+        "energy": 2.3099894087116586
+      },
+      {
+        "task_id": 81,
+        "success": false,
+        "latency": 3716.4092765779583,
+        "energy": 3.7164092765779584
+      },
+      {
+        "task_id": 82,
+        "success": false,
+        "latency": 3336.797938856677,
+        "energy": 3.336797938856677
+      },
+      {
+        "task_id": 83,
+        "success": false,
+        "latency": 3257.8341700905653,
+        "energy": 3.257834170090565
+      },
+      {
+        "task_id": 84,
+        "success": false,
+        "latency": 3430.220889174291,
+        "energy": 3.4302208891742914
+      },
+      {
+        "task_id": 85,
+        "success": false,
+        "latency": 3423.0992774275487,
+        "energy": 3.4230992774275486
+      },
+      {
+        "task_id": 86,
+        "success": false,
+        "latency": 2461.4272786962306,
+        "energy": 2.4614272786962306
+      },
+      {
+        "task_id": 87,
+        "success": false,
+        "latency": 2140.3806747753883,
+        "energy": 2.1403806747753884
+      },
+      {
+        "task_id": 88,
+        "success": false,
+        "latency": 1206.5419114980514,
+        "energy": 1.2065419114980513
+      },
+      {
+        "task_id": 89,
+        "success": false,
+        "latency": 4586.441051896083,
+        "energy": 4.586441051896083
+      },
+      {
+        "task_id": 90,
+        "success": false,
+        "latency": 4268.288283797119,
+        "energy": 4.268288283797119
+      },
+      {
+        "task_id": 91,
+        "success": false,
+        "latency": 4283.44589261341,
+        "energy": 4.28344589261341
+      },
+      {
+        "task_id": 92,
+        "success": false,
+        "latency": 2119.916374641137,
+        "energy": 2.1199163746411367
+      },
+      {
+        "task_id": 93,
+        "success": false,
+        "latency": 3843.809915346993,
+        "energy": 3.843809915346993
+      },
+      {
+        "task_id": 94,
+        "success": false,
+        "latency": 3828.920382577778,
+        "energy": 3.828920382577778
+      },
+      {
+        "task_id": 95,
+        "success": false,
+        "latency": 1617.4508610968091,
+        "energy": 1.6174508610968092
+      },
+      {
+        "task_id": 96,
+        "success": false,
+        "latency": 2476.9219260395844,
+        "energy": 2.4769219260395845
+      },
+      {
+        "task_id": 97,
+        "success": false,
+        "latency": 4959.840929559781,
+        "energy": 4.959840929559781
+      },
+      {
+        "task_id": 98,
+        "success": false,
+        "latency": 1555.2990937680815,
+        "energy": 1.5552990937680815
+      },
+      {
+        "task_id": 99,
+        "success": false,
+        "latency": 2886.3047542006334,
+        "energy": 2.8863047542006335
+      }
+    ]
+  },
+  "edge": {
+    "scalability": 5.0,
+    "energy_mean": 0.5118756752684994,
+    "energy_std": 0.06628738818903614,
+    "throughput": 5.0,
+    "avg_latency": 376.39100995365317,
+    "raw_results": [
+      {
+        "task_id": 0,
+        "success": false,
+        "latency": 961.5857560443334,
+        "energy": 1.2050180137281403
+      },
+      {
+        "task_id": 1,
+        "success": false,
+        "latency": 1317.9049364377352,
+        "energy": 1.910802555400268
+      },
+      {
+        "task_id": 2,
+        "success": false,
+        "latency": 784.8137463723979,
+        "energy": 1.3173872666750934
+      },
+      {
+        "task_id": 3,
+        "success": false,
+        "latency": 1161.724691117468,
+        "energy": 1.9063436940424403
+      },
+      {
+        "task_id": 4,
+        "success": false,
+        "latency": 538.0150486441592,
+        "energy": 0.7306949758027926
+      },
+      {
+        "task_id": 5,
+        "success": true,
+        "latency": 329.79920796313684,
+        "energy": 0.4291549210424796
+      },
+      {
+        "task_id": 6,
+        "success": false,
+        "latency": 932.9050270135745,
+        "energy": 1.4491562166091876
+      },
+      {
+        "task_id": 7,
+        "success": false,
+        "latency": 1026.7683139986366,
+        "energy": 1.7031495721422971
+      },
+      {
+        "task_id": 8,
+        "success": false,
+        "latency": 863.3966921563842,
+        "energy": 0.9573385671251158
+      },
+      {
+        "task_id": 9,
+        "success": false,
+        "latency": 1018.0358075306971,
+        "energy": 1.685569488615758
+      },
+      {
+        "task_id": 10,
+        "success": false,
+        "latency": 924.1120910825539,
+        "energy": 1.3096324539999333
+      },
+      {
+        "task_id": 11,
+        "success": false,
+        "latency": 670.7872433229348,
+        "energy": 0.8000263187457675
+      },
+      {
+        "task_id": 12,
+        "success": false,
+        "latency": 693.4278174003508,
+        "energy": 0.7817549756645443
+      },
+      {
+        "task_id": 13,
+        "success": false,
+        "latency": 656.3160252062074,
+        "energy": 0.5649981901374922
+      },
+      {
+        "task_id": 14,
+        "success": false,
+        "latency": 827.6071139432736,
+        "energy": 0.9120793616489788
+      },
+      {
+        "task_id": 15,
+        "success": false,
+        "latency": 1038.5173177069737,
+        "energy": 1.848611162270822
+      },
+      {
+        "task_id": 16,
+        "success": false,
+        "latency": 980.8226274250882,
+        "energy": 1.4828318470788853
+      },
+      {
+        "task_id": 17,
+        "success": false,
+        "latency": 551.1444140951429,
+        "energy": 0.5467266356135697
+      },
+      {
+        "task_id": 18,
+        "success": false,
+        "latency": 1140.2049175424156,
+        "energy": 1.6037992471002882
+      },
+      {
+        "task_id": 19,
+        "success": false,
+        "latency": 1341.5027112808452,
+        "energy": 1.8894865690996683
+      },
+      {
+        "task_id": 20,
+        "success": false,
+        "latency": 922.2897395813576,
+        "energy": 1.1064488021974033
+      },
+      {
+        "task_id": 21,
+        "success": false,
+        "latency": 1280.0911584353203,
+        "energy": 1.9498431103586158
+      },
+      {
+        "task_id": 22,
+        "success": true,
+        "latency": 392.8123188550313,
+        "energy": 0.5617962817964645
+      },
+      {
+        "task_id": 23,
+        "success": false,
+        "latency": 887.7282923719699,
+        "energy": 1.034642563126803
+      },
+      {
+        "task_id": 24,
+        "success": false,
+        "latency": 668.5948363885298,
+        "energy": 0.5357403425363071
+      },
+      {
+        "task_id": 25,
+        "success": false,
+        "latency": 1065.0272368889987,
+        "energy": 1.808575949821467
+      },
+      {
+        "task_id": 26,
+        "success": false,
+        "latency": 1008.1056155770463,
+        "energy": 1.6054050964143067
+      },
+      {
+        "task_id": 27,
+        "success": false,
+        "latency": 813.0170686727347,
+        "energy": 1.0047801441956072
+      },
+      {
+        "task_id": 28,
+        "success": false,
+        "latency": 531.598019217996,
+        "energy": 0.5779159716898422
+      },
+      {
+        "task_id": 29,
+        "success": false,
+        "latency": 368.0643537512529,
+        "energy": 0.49008524109093976
+      },
+      {
+        "task_id": 30,
+        "success": false,
+        "latency": 1098.3019422256493,
+        "energy": 1.5907386511092767
+      },
+      {
+        "task_id": 31,
+        "success": false,
+        "latency": 676.3243312291587,
+        "energy": 0.9997929272379266
+      },
+      {
+        "task_id": 32,
+        "success": false,
+        "latency": 890.7436249737998,
+        "energy": 1.0981373305704896
+      },
+      {
+        "task_id": 33,
+        "success": false,
+        "latency": 604.6937259438437,
+        "energy": 0.4690558591209218
+      },
+      {
+        "task_id": 34,
+        "success": false,
+        "latency": 1101.2494259794848,
+        "energy": 1.8705851444458554
+      },
+      {
+        "task_id": 35,
+        "success": false,
+        "latency": 904.885839539403,
+        "energy": 1.2369565506722382
+      },
+      {
+        "task_id": 36,
+        "success": false,
+        "latency": 1304.6811178999174,
+        "energy": 1.993330200046993
+      },
+      {
+        "task_id": 37,
+        "success": true,
+        "latency": 411.26532494267997,
+        "energy": 0.4727142085463326
+      },
+      {
+        "task_id": 38,
+        "success": false,
+        "latency": 847.9678335250621,
+        "energy": 1.1290508044571408
+      },
+      {
+        "task_id": 39,
+        "success": false,
+        "latency": 669.0210258174816,
+        "energy": 1.0212294143837954
+      },
+      {
+        "task_id": 40,
+        "success": false,
+        "latency": 1380.1032843664063,
+        "energy": 1.9590316922658666
+      },
+      {
+        "task_id": 41,
+        "success": false,
+        "latency": 640.3969564142561,
+        "energy": 0.8476216114703132
+      },
+      {
+        "task_id": 42,
+        "success": true,
+        "latency": 415.93222165073195,
+        "energy": 0.6130962003579996
+      },
+      {
+        "task_id": 43,
+        "success": false,
+        "latency": 1061.8684694101407,
+        "energy": 1.561151213421376
+      },
+      {
+        "task_id": 44,
+        "success": false,
+        "latency": 992.3210860343074,
+        "energy": 1.7857022232006536
+      },
+      {
+        "task_id": 45,
+        "success": false,
+        "latency": 1060.8002531854138,
+        "energy": 1.6441636539763609
+      },
+      {
+        "task_id": 46,
+        "success": false,
+        "latency": 882.189646403635,
+        "energy": 1.3506091445634163
+      },
+      {
+        "task_id": 47,
+        "success": false,
+        "latency": 760.5889608013986,
+        "energy": 1.3105303506651964
+      },
+      {
+        "task_id": 48,
+        "success": false,
+        "latency": 521.7658164728616,
+        "energy": 0.8374513150891301
+      },
+      {
+        "task_id": 49,
+        "success": false,
+        "latency": 952.4484598539614,
+        "energy": 1.254954040047141
+      },
+      {
+        "task_id": 50,
+        "success": false,
+        "latency": 1202.5149657067855,
+        "energy": 1.630379864288817
+      },
+      {
+        "task_id": 51,
+        "success": false,
+        "latency": 543.4823709857935,
+        "energy": 0.785735731727411
+      },
+      {
+        "task_id": 52,
+        "success": false,
+        "latency": 843.105405321812,
+        "energy": 1.3698794151214082
+      },
+      {
+        "task_id": 53,
+        "success": false,
+        "latency": 607.8686039301537,
+        "energy": 0.9730603488525449
+      },
+      {
+        "task_id": 54,
+        "success": false,
+        "latency": 932.0074342512116,
+        "energy": 1.1619371148624227
+      },
+      {
+        "task_id": 55,
+        "success": false,
+        "latency": 906.0256219109122,
+        "energy": 1.283050942039177
+      },
+      {
+        "task_id": 56,
+        "success": false,
+        "latency": 910.5794271560209,
+        "energy": 1.3439294354202178
+      },
+      {
+        "task_id": 57,
+        "success": false,
+        "latency": 1006.5531668745232,
+        "energy": 1.3924952821655436
+      },
+      {
+        "task_id": 58,
+        "success": false,
+        "latency": 1092.5590417073945,
+        "energy": 1.3876219393556672
+      },
+      {
+        "task_id": 59,
+        "success": false,
+        "latency": 738.7872111273791,
+        "energy": 1.0275904721595717
+      },
+      {
+        "task_id": 60,
+        "success": false,
+        "latency": 946.9605554050145,
+        "energy": 1.2223831826556975
+      },
+      {
+        "task_id": 61,
+        "success": false,
+        "latency": 927.1272196899172,
+        "energy": 1.237763641624018
+      },
+      {
+        "task_id": 62,
+        "success": false,
+        "latency": 1183.7473139146477,
+        "energy": 1.882540200258391
+      },
+      {
+        "task_id": 63,
+        "success": false,
+        "latency": 1226.6638503061,
+        "energy": 1.9680521204567634
+      },
+      {
+        "task_id": 64,
+        "success": false,
+        "latency": 858.0201749234851,
+        "energy": 1.3274398951547814
+      },
+      {
+        "task_id": 65,
+        "success": false,
+        "latency": 436.04553309015216,
+        "energy": 0.604873342332436
+      },
+      {
+        "task_id": 66,
+        "success": false,
+        "latency": 1154.0984528089286,
+        "energy": 1.8348614558496188
+      },
+      {
+        "task_id": 67,
+        "success": false,
+        "latency": 838.1800175227908,
+        "energy": 1.3630966328655365
+      },
+      {
+        "task_id": 68,
+        "success": false,
+        "latency": 564.5156261941258,
+        "energy": 0.8457445424511338
+      },
+      {
+        "task_id": 69,
+        "success": false,
+        "latency": 826.4560779530539,
+        "energy": 1.255077605972037
+      },
+      {
+        "task_id": 70,
+        "success": false,
+        "latency": 908.6601618452823,
+        "energy": 1.2054676333677712
+      },
+      {
+        "task_id": 71,
+        "success": false,
+        "latency": 890.0074247157811,
+        "energy": 1.1698326304900692
+      },
+      {
+        "task_id": 72,
+        "success": false,
+        "latency": 1041.242867579007,
+        "energy": 1.8733958408509013
+      },
+      {
+        "task_id": 73,
+        "success": false,
+        "latency": 543.7425924662833,
+        "energy": 0.5352272122890911
+      },
+      {
+        "task_id": 74,
+        "success": false,
+        "latency": 736.4250374942324,
+        "energy": 0.9927553644662113
+      },
+      {
+        "task_id": 75,
+        "success": false,
+        "latency": 940.577742824096,
+        "energy": 1.2500252063576545
+      },
+      {
+        "task_id": 76,
+        "success": false,
+        "latency": 715.2214229582734,
+        "energy": 0.8038991109504332
+      },
+      {
+        "task_id": 77,
+        "success": false,
+        "latency": 894.4440744816201,
+        "energy": 1.59938597121374
+      },
+      {
+        "task_id": 78,
+        "success": false,
+        "latency": 788.684374327132,
+        "energy": 1.2521876263280372
+      },
+      {
+        "task_id": 79,
+        "success": false,
+        "latency": 611.2959322267941,
+        "energy": 0.6916542055615329
+      },
+      {
+        "task_id": 80,
+        "success": false,
+        "latency": 585.3217639244921,
+        "energy": 0.9239957634846635
+      },
+      {
+        "task_id": 81,
+        "success": false,
+        "latency": 1080.81665166994,
+        "energy": 1.4865637106311835
+      },
+      {
+        "task_id": 82,
+        "success": false,
+        "latency": 988.1427798977076,
+        "energy": 1.3347191755426708
+      },
+      {
+        "task_id": 83,
+        "success": false,
+        "latency": 857.7740743225256,
+        "energy": 1.3031336680362262
+      },
+      {
+        "task_id": 84,
+        "success": false,
+        "latency": 849.2371875835477,
+        "energy": 1.3720883556697165
+      },
+      {
+        "task_id": 85,
+        "success": false,
+        "latency": 845.532428841028,
+        "energy": 1.3692397109710195
+      },
+      {
+        "task_id": 86,
+        "success": false,
+        "latency": 733.3845919980422,
+        "energy": 0.9845709114784923
+      },
+      {
+        "task_id": 87,
+        "success": false,
+        "latency": 568.5556854493992,
+        "energy": 0.8561522699101554
+      },
+      {
+        "task_id": 88,
+        "success": true,
+        "latency": 332.14597635668576,
+        "energy": 0.48261676459922054
+      },
+      {
+        "task_id": 89,
+        "success": false,
+        "latency": 1186.6077040770278,
+        "energy": 1.8345764207584332
+      },
+      {
+        "task_id": 90,
+        "success": false,
+        "latency": 1021.1865614138046,
+        "energy": 1.7073153135188477
+      },
+      {
+        "task_id": 91,
+        "success": false,
+        "latency": 1171.5955051903793,
+        "energy": 1.7133783570453642
+      },
+      {
+        "task_id": 92,
+        "success": false,
+        "latency": 755.2210135496471,
+        "energy": 0.8479665498564547
+      },
+      {
+        "task_id": 93,
+        "success": false,
+        "latency": 917.6041998176609,
+        "energy": 1.5375239661387974
+      },
+      {
+        "task_id": 94,
+        "success": false,
+        "latency": 1096.473516977264,
+        "energy": 1.5315681530311114
+      },
+      {
+        "task_id": 95,
+        "success": false,
+        "latency": 562.4550048129034,
+        "energy": 0.6469803444387238
+      },
+      {
+        "task_id": 96,
+        "success": false,
+        "latency": 725.7501363180288,
+        "energy": 0.9907687704158339
+      },
+      {
+        "task_id": 97,
+        "success": false,
+        "latency": 1180.1214163038676,
+        "energy": 1.9839363718239125
+      },
+      {
+        "task_id": 98,
+        "success": false,
+        "latency": 396.92730656620176,
+        "energy": 0.6221196375072326
+      },
+      {
+        "task_id": 99,
+        "success": false,
+        "latency": 794.0500433672527,
+        "energy": 1.1545219016802535
+      }
+    ]
+  },
+  "fog": {
+    "scalability": 98.0,
+    "energy_mean": 0.6091505498939536,
+    "energy_std": 0.22076438662145123,
+    "throughput": 98.0,
+    "avg_latency": 188.89791457105855,
+    "raw_results": [
+      {
+        "task_id": 0,
+        "success": true,
+        "latency": 211.31715120886668,
+        "energy": 0.6025090068640702
+      },
+      {
+        "task_id": 1,
+        "success": true,
+        "latency": 282.58098728754703,
+        "energy": 0.955401277700134
+      },
+      {
+        "task_id": 2,
+        "success": true,
+        "latency": 175.96274927447956,
+        "energy": 0.6586936333375467
+      },
+      {
+        "task_id": 3,
+        "success": true,
+        "latency": 251.34493822349356,
+        "energy": 0.9531718470212202
+      },
+      {
+        "task_id": 4,
+        "success": true,
+        "latency": 126.60300972883182,
+        "energy": 0.3653474879013963
+      },
+      {
+        "task_id": 5,
+        "success": true,
+        "latency": 84.95984159262738,
+        "energy": 0.2145774605212398
+      },
+      {
+        "task_id": 6,
+        "success": true,
+        "latency": 205.58100540271494,
+        "energy": 0.7245781083045938
+      },
+      {
+        "task_id": 7,
+        "success": true,
+        "latency": 224.35366279972732,
+        "energy": 0.8515747860711486
+      },
+      {
+        "task_id": 8,
+        "success": true,
+        "latency": 191.67933843127685,
+        "energy": 0.4786692835625579
+      },
+      {
+        "task_id": 9,
+        "success": true,
+        "latency": 222.6071615061394,
+        "energy": 0.842784744307879
+      },
+      {
+        "task_id": 10,
+        "success": true,
+        "latency": 203.82241821651075,
+        "energy": 0.6548162269999667
+      },
+      {
+        "task_id": 11,
+        "success": true,
+        "latency": 153.15744866458698,
+        "energy": 0.40001315937288373
+      },
+      {
+        "task_id": 12,
+        "success": true,
+        "latency": 157.68556348007016,
+        "energy": 0.39087748783227216
+      },
+      {
+        "task_id": 13,
+        "success": true,
+        "latency": 150.26320504124146,
+        "energy": 0.2824990950687461
+      },
+      {
+        "task_id": 14,
+        "success": true,
+        "latency": 184.52142278865472,
+        "energy": 0.4560396808244894
+      },
+      {
+        "task_id": 15,
+        "success": true,
+        "latency": 226.70346354139474,
+        "energy": 0.924305581135411
+      },
+      {
+        "task_id": 16,
+        "success": true,
+        "latency": 215.16452548501766,
+        "energy": 0.7414159235394426
+      },
+      {
+        "task_id": 17,
+        "success": true,
+        "latency": 129.22888281902857,
+        "energy": 0.27336331780678486
+      },
+      {
+        "task_id": 18,
+        "success": true,
+        "latency": 247.04098350848312,
+        "energy": 0.8018996235501441
+      },
+      {
+        "task_id": 19,
+        "success": true,
+        "latency": 287.3005422561691,
+        "energy": 0.9447432845498341
+      },
+      {
+        "task_id": 20,
+        "success": true,
+        "latency": 203.4579479162715,
+        "energy": 0.5532244010987016
+      },
+      {
+        "task_id": 21,
+        "success": true,
+        "latency": 275.01823168706403,
+        "energy": 0.9749215551793079
+      },
+      {
+        "task_id": 22,
+        "success": true,
+        "latency": 97.56246377100626,
+        "energy": 0.28089814089823223
+      },
+      {
+        "task_id": 23,
+        "success": true,
+        "latency": 196.545658474394,
+        "energy": 0.5173212815634015
+      },
+      {
+        "task_id": 24,
+        "success": true,
+        "latency": 152.71896727770593,
+        "energy": 0.26787017126815355
+      },
+      {
+        "task_id": 25,
+        "success": true,
+        "latency": 232.00544737779975,
+        "energy": 0.9042879749107335
+      },
+      {
+        "task_id": 26,
+        "success": true,
+        "latency": 220.62112311540926,
+        "energy": 0.8027025482071534
+      },
+      {
+        "task_id": 27,
+        "success": true,
+        "latency": 181.60341373454693,
+        "energy": 0.5023900720978036
+      },
+      {
+        "task_id": 28,
+        "success": true,
+        "latency": 125.3196038435992,
+        "energy": 0.2889579858449211
+      },
+      {
+        "task_id": 29,
+        "success": true,
+        "latency": 92.61287075025058,
+        "energy": 0.24504262054546988
+      },
+      {
+        "task_id": 30,
+        "success": true,
+        "latency": 238.66038844512985,
+        "energy": 0.7953693255546384
+      },
+      {
+        "task_id": 31,
+        "success": true,
+        "latency": 154.26486624583174,
+        "energy": 0.4998964636189633
+      },
+      {
+        "task_id": 32,
+        "success": true,
+        "latency": 197.14872499475996,
+        "energy": 0.5490686652852448
+      },
+      {
+        "task_id": 33,
+        "success": true,
+        "latency": 139.93874518876873,
+        "energy": 0.2345279295604609
+      },
+      {
+        "task_id": 34,
+        "success": true,
+        "latency": 239.24988519589695,
+        "energy": 0.9352925722229277
+      },
+      {
+        "task_id": 35,
+        "success": true,
+        "latency": 199.9771679078806,
+        "energy": 0.6184782753361191
+      },
+      {
+        "task_id": 36,
+        "success": true,
+        "latency": 279.93622357998345,
+        "energy": 0.9966651000234965
+      },
+      {
+        "task_id": 37,
+        "success": true,
+        "latency": 101.25306498853601,
+        "energy": 0.2363571042731663
+      },
+      {
+        "task_id": 38,
+        "success": true,
+        "latency": 188.59356670501242,
+        "energy": 0.5645254022285704
+      },
+      {
+        "task_id": 39,
+        "success": true,
+        "latency": 152.80420516349633,
+        "energy": 0.5106147071918977
+      },
+      {
+        "task_id": 40,
+        "success": true,
+        "latency": 295.0206568732812,
+        "energy": 0.9795158461329333
+      },
+      {
+        "task_id": 41,
+        "success": true,
+        "latency": 147.07939128285125,
+        "energy": 0.4238108057351566
+      },
+      {
+        "task_id": 42,
+        "success": true,
+        "latency": 102.1864443301464,
+        "energy": 0.3065481001789998
+      },
+      {
+        "task_id": 43,
+        "success": true,
+        "latency": 231.37369388202814,
+        "energy": 0.780575606710688
+      },
+      {
+        "task_id": 44,
+        "success": false,
+        "latency": 217.4642172068615,
+        "energy": 0.8928511116003268
+      },
+      {
+        "task_id": 45,
+        "success": true,
+        "latency": 231.16005063708278,
+        "energy": 0.8220818269881804
+      },
+      {
+        "task_id": 46,
+        "success": true,
+        "latency": 195.437929280727,
+        "energy": 0.6753045722817081
+      },
+      {
+        "task_id": 47,
+        "success": true,
+        "latency": 171.11779216027972,
+        "energy": 0.6552651753325982
+      },
+      {
+        "task_id": 48,
+        "success": true,
+        "latency": 123.35316329457233,
+        "energy": 0.41872565754456503
+      },
+      {
+        "task_id": 49,
+        "success": true,
+        "latency": 209.4896919707923,
+        "energy": 0.6274770200235705
+      },
+      {
+        "task_id": 50,
+        "success": true,
+        "latency": 259.5029931413571,
+        "energy": 0.8151899321444085
+      },
+      {
+        "task_id": 51,
+        "success": true,
+        "latency": 127.6964741971587,
+        "energy": 0.3928678658637055
+      },
+      {
+        "task_id": 52,
+        "success": true,
+        "latency": 187.62108106436241,
+        "energy": 0.6849397075607041
+      },
+      {
+        "task_id": 53,
+        "success": true,
+        "latency": 140.57372078603072,
+        "energy": 0.48653017442627244
+      },
+      {
+        "task_id": 54,
+        "success": true,
+        "latency": 205.40148685024235,
+        "energy": 0.5809685574312113
+      },
+      {
+        "task_id": 55,
+        "success": true,
+        "latency": 200.20512438218242,
+        "energy": 0.6415254710195885
+      },
+      {
+        "task_id": 56,
+        "success": true,
+        "latency": 201.1158854312042,
+        "energy": 0.6719647177101089
+      },
+      {
+        "task_id": 57,
+        "success": true,
+        "latency": 220.31063337490465,
+        "energy": 0.6962476410827718
+      },
+      {
+        "task_id": 58,
+        "success": true,
+        "latency": 237.51180834147888,
+        "energy": 0.6938109696778336
+      },
+      {
+        "task_id": 59,
+        "success": true,
+        "latency": 166.75744222547584,
+        "energy": 0.5137952360797858
+      },
+      {
+        "task_id": 60,
+        "success": true,
+        "latency": 208.3921110810029,
+        "energy": 0.6111915913278487
+      },
+      {
+        "task_id": 61,
+        "success": true,
+        "latency": 204.42544393798346,
+        "energy": 0.618881820812009
+      },
+      {
+        "task_id": 62,
+        "success": true,
+        "latency": 255.74946278292956,
+        "energy": 0.9412701001291955
+      },
+      {
+        "task_id": 63,
+        "success": true,
+        "latency": 264.33277006122,
+        "energy": 0.9840260602283817
+      },
+      {
+        "task_id": 64,
+        "success": true,
+        "latency": 190.60403498469702,
+        "energy": 0.6637199475773907
+      },
+      {
+        "task_id": 65,
+        "success": true,
+        "latency": 106.20910661803043,
+        "energy": 0.302436671166218
+      },
+      {
+        "task_id": 66,
+        "success": true,
+        "latency": 249.8196905617857,
+        "energy": 0.9174307279248094
+      },
+      {
+        "task_id": 67,
+        "success": true,
+        "latency": 186.63600350455818,
+        "energy": 0.6815483164327683
+      },
+      {
+        "task_id": 68,
+        "success": true,
+        "latency": 131.90312523882517,
+        "energy": 0.4228722712255669
+      },
+      {
+        "task_id": 69,
+        "success": true,
+        "latency": 184.2912155906108,
+        "energy": 0.6275388029860185
+      },
+      {
+        "task_id": 70,
+        "success": true,
+        "latency": 200.73203236905647,
+        "energy": 0.6027338166838856
+      },
+      {
+        "task_id": 71,
+        "success": true,
+        "latency": 197.0014849431562,
+        "energy": 0.5849163152450346
+      },
+      {
+        "task_id": 72,
+        "success": true,
+        "latency": 227.24857351580138,
+        "energy": 0.9366979204254506
+      },
+      {
+        "task_id": 73,
+        "success": true,
+        "latency": 127.74851849325665,
+        "energy": 0.26761360614454555
+      },
+      {
+        "task_id": 74,
+        "success": true,
+        "latency": 166.28500749884648,
+        "energy": 0.49637768223310563
+      },
+      {
+        "task_id": 75,
+        "success": true,
+        "latency": 207.1155485648192,
+        "energy": 0.6250126031788272
+      },
+      {
+        "task_id": 76,
+        "success": true,
+        "latency": 162.04428459165467,
+        "energy": 0.4019495554752166
+      },
+      {
+        "task_id": 77,
+        "success": true,
+        "latency": 197.88881489632402,
+        "energy": 0.79969298560687
+      },
+      {
+        "task_id": 78,
+        "success": true,
+        "latency": 176.7368748654264,
+        "energy": 0.6260938131640186
+      },
+      {
+        "task_id": 79,
+        "success": true,
+        "latency": 141.2591864453588,
+        "energy": 0.34582710278076645
+      },
+      {
+        "task_id": 80,
+        "success": true,
+        "latency": 136.06435278489843,
+        "energy": 0.46199788174233175
+      },
+      {
+        "task_id": 81,
+        "success": true,
+        "latency": 235.16333033398797,
+        "energy": 0.7432818553155918
+      },
+      {
+        "task_id": 82,
+        "success": true,
+        "latency": 216.6285559795415,
+        "energy": 0.6673595877713354
+      },
+      {
+        "task_id": 83,
+        "success": true,
+        "latency": 190.5548148645051,
+        "energy": 0.6515668340181131
+      },
+      {
+        "task_id": 84,
+        "success": true,
+        "latency": 188.84743751670953,
+        "energy": 0.6860441778348583
+      },
+      {
+        "task_id": 85,
+        "success": true,
+        "latency": 188.10648576820557,
+        "energy": 0.6846198554855097
+      },
+      {
+        "task_id": 86,
+        "success": true,
+        "latency": 165.67691839960844,
+        "energy": 0.49228545573924615
+      },
+      {
+        "task_id": 87,
+        "success": true,
+        "latency": 132.71113708987986,
+        "energy": 0.4280761349550777
+      },
+      {
+        "task_id": 88,
+        "success": true,
+        "latency": 85.42919527133716,
+        "energy": 0.24130838229961027
+      },
+      {
+        "task_id": 89,
+        "success": true,
+        "latency": 256.32154081540557,
+        "energy": 0.9172882103792166
+      },
+      {
+        "task_id": 90,
+        "success": true,
+        "latency": 223.2373122827609,
+        "energy": 0.8536576567594238
+      },
+      {
+        "task_id": 91,
+        "success": true,
+        "latency": 253.31910103807584,
+        "energy": 0.8566891785226821
+      },
+      {
+        "task_id": 92,
+        "success": true,
+        "latency": 170.04420270992944,
+        "energy": 0.42398327492822735
+      },
+      {
+        "task_id": 93,
+        "success": true,
+        "latency": 202.5208399635322,
+        "energy": 0.7687619830693987
+      },
+      {
+        "task_id": 94,
+        "success": false,
+        "latency": 238.2947033954528,
+        "energy": 0.7657840765155557
+      },
+      {
+        "task_id": 95,
+        "success": true,
+        "latency": 131.4910009625807,
+        "energy": 0.3234901722193619
+      },
+      {
+        "task_id": 96,
+        "success": true,
+        "latency": 164.15002726360575,
+        "energy": 0.49538438520791694
+      },
+      {
+        "task_id": 97,
+        "success": true,
+        "latency": 255.02428326077347,
+        "energy": 0.9919681859119562
+      },
+      {
+        "task_id": 98,
+        "success": true,
+        "latency": 98.38546131324037,
+        "energy": 0.3110598187536163
+      },
+      {
+        "task_id": 99,
+        "success": true,
+        "latency": 177.8100086734505,
+        "energy": 0.5772609508401267
+      }
+    ]
+  },
+  "cloud": {
+    "scalability": 100.0,
+    "energy_mean": 0.30677694538861666,
+    "energy_std": 0.11044567375541316,
+    "throughput": 100.0,
+    "avg_latency": 104.16107820396861,
+    "raw_results": [
+      {
+        "task_id": 0,
+        "success": true,
+        "latency": 115.53312526122983,
+        "energy": 0.3012545034320351
+      },
+      {
+        "task_id": 1,
+        "success": true,
+        "latency": 133.52042975876682,
+        "energy": 0.477700638850067
+      },
+      {
+        "task_id": 2,
+        "success": true,
+        "latency": 95.04669297036246,
+        "energy": 0.32934681666877336
+      },
+      {
+        "task_id": 3,
+        "success": true,
+        "latency": 118.01387676068578,
+        "energy": 0.4765859235106101
+      },
+      {
+        "task_id": 4,
+        "success": true,
+        "latency": 85.0341304693461,
+        "energy": 0.18267374395069816
+      },
+      {
+        "task_id": 5,
+        "success": true,
+        "latency": 71.7510477702517,
+        "energy": 0.1072887302606199
+      },
+      {
+        "task_id": 6,
+        "success": true,
+        "latency": 106.56159728612778,
+        "energy": 0.3622890541522969
+      },
+      {
+        "task_id": 7,
+        "success": true,
+        "latency": 109.59809209630623,
+        "energy": 0.4257873930355743
+      },
+      {
+        "task_id": 8,
+        "success": true,
+        "latency": 111.90620503751053,
+        "energy": 0.23933464178127895
+      },
+      {
+        "task_id": 9,
+        "success": true,
+        "latency": 109.16434353767576,
+        "energy": 0.4213923721539395
+      },
+      {
+        "task_id": 10,
+        "success": true,
+        "latency": 109.17039775825704,
+        "energy": 0.32740811349998333
+      },
+      {
+        "task_id": 11,
+        "success": true,
+        "latency": 96.5780663636493,
+        "energy": 0.20000657968644187
+      },
+      {
+        "task_id": 12,
+        "success": true,
+        "latency": 99.29890734842147,
+        "energy": 0.19543874391613608
+      },
+      {
+        "task_id": 13,
+        "success": true,
+        "latency": 101.00664776718344,
+        "energy": 0.14124954753437305
+      },
+      {
+        "task_id": 14,
+        "success": true,
+        "latency": 109.45872735310289,
+        "energy": 0.2280198404122447
+      },
+      {
+        "task_id": 15,
+        "success": true,
+        "latency": 107.13645271392681,
+        "energy": 0.4621527905677055
+      },
+      {
+        "task_id": 16,
+        "success": true,
+        "latency": 110.5114665655367,
+        "energy": 0.3707079617697213
+      },
+      {
+        "task_id": 17,
+        "success": true,
+        "latency": 90.94627551917505,
+        "energy": 0.13668165890339243
+      },
+      {
+        "task_id": 18,
+        "success": true,
+        "latency": 123.42551057673435,
+        "energy": 0.40094981177507205
+      },
+      {
+        "task_id": 19,
+        "success": true,
+        "latency": 136.41310690059282,
+        "energy": 0.47237164227491707
+      },
+      {
+        "task_id": 20,
+        "success": true,
+        "latency": 114.06775390320068,
+        "energy": 0.2766122005493508
+      },
+      {
+        "task_id": 21,
+        "success": true,
+        "latency": 128.76303808456663,
+        "energy": 0.48746077758965395
+      },
+      {
+        "task_id": 22,
+        "success": true,
+        "latency": 74.73632484059152,
+        "energy": 0.14044907044911611
+      },
+      {
+        "task_id": 23,
+        "success": true,
+        "latency": 112.40676515902692,
+        "energy": 0.25866064078170076
+      },
+      {
+        "task_id": 24,
+        "success": true,
+        "latency": 102.9659750754453,
+        "energy": 0.13393508563407677
+      },
+      {
+        "task_id": 25,
+        "success": true,
+        "latency": 110.7883249433632,
+        "energy": 0.45214398745536677
+      },
+      {
+        "task_id": 26,
+        "success": true,
+        "latency": 110.17543414734696,
+        "energy": 0.4013512741035767
+      },
+      {
+        "task_id": 27,
+        "success": true,
+        "latency": 105.6822032623833,
+        "energy": 0.2511950360489018
+      },
+      {
+        "task_id": 28,
+        "success": true,
+        "latency": 88.21190262955355,
+        "energy": 0.14447899292246055
+      },
+      {
+        "task_id": 29,
+        "success": true,
+        "latency": 74.0543043478518,
+        "energy": 0.12252131027273494
+      },
+      {
+        "task_id": 30,
+        "success": true,
+        "latency": 119.56172794483301,
+        "energy": 0.3976846627773192
+      },
+      {
+        "task_id": 31,
+        "success": true,
+        "latency": 92.13760994196771,
+        "energy": 0.24994823180948164
+      },
+      {
+        "task_id": 32,
+        "success": true,
+        "latency": 111.12092923311774,
+        "energy": 0.2745343326426224
+      },
+      {
+        "task_id": 33,
+        "success": true,
+        "latency": 98.24297611636132,
+        "energy": 0.11726396478023045
+      },
+      {
+        "task_id": 34,
+        "success": true,
+        "latency": 112.8603139868021,
+        "energy": 0.46764628611146386
+      },
+      {
+        "task_id": 35,
+        "success": true,
+        "latency": 109.06467018713435,
+        "energy": 0.30923913766805955
+      },
+      {
+        "task_id": 36,
+        "success": true,
+        "latency": 130.1348567888169,
+        "energy": 0.49833255001174825
+      },
+      {
+        "task_id": 37,
+        "success": true,
+        "latency": 78.80867728060969,
+        "energy": 0.11817855213658315
+      },
+      {
+        "task_id": 38,
+        "success": true,
+        "latency": 106.07051324107769,
+        "energy": 0.2822627011142852
+      },
+      {
+        "task_id": 39,
+        "success": true,
+        "latency": 90.87136722215328,
+        "energy": 0.25530735359594886
+      },
+      {
+        "task_id": 40,
+        "success": true,
+        "latency": 138.53453612999397,
+        "energy": 0.48975792306646665
+      },
+      {
+        "task_id": 41,
+        "success": true,
+        "latency": 92.34915535466779,
+        "energy": 0.2119054028675783
+      },
+      {
+        "task_id": 42,
+        "success": true,
+        "latency": 75.7658171561232,
+        "energy": 0.1532740500894999
+      },
+      {
+        "task_id": 43,
+        "success": true,
+        "latency": 116.65806660547968,
+        "energy": 0.390287803355344
+      },
+      {
+        "task_id": 44,
+        "success": true,
+        "latency": 104.0895530234144,
+        "energy": 0.4464255558001634
+      },
+      {
+        "task_id": 45,
+        "success": true,
+        "latency": 114.47593396913237,
+        "energy": 0.4110409134940902
+      },
+      {
+        "task_id": 46,
+        "success": true,
+        "latency": 103.9537360262781,
+        "energy": 0.3376522861408541
+      },
+      {
+        "task_id": 47,
+        "success": true,
+        "latency": 92.79563731350996,
+        "energy": 0.3276325876662991
+      },
+      {
+        "task_id": 48,
+        "success": true,
+        "latency": 80.74029877005792,
+        "energy": 0.20936282877228252
+      },
+      {
+        "task_id": 49,
+        "success": true,
+        "latency": 113.37099498421762,
+        "energy": 0.31373851001178527
+      },
+      {
+        "task_id": 50,
+        "success": true,
+        "latency": 128.9919999634581,
+        "energy": 0.40759496607220425
+      },
+      {
+        "task_id": 51,
+        "success": true,
+        "latency": 84.20484380539406,
+        "energy": 0.19643393293185274
+      },
+      {
+        "task_id": 52,
+        "success": true,
+        "latency": 99.563555154146,
+        "energy": 0.34246985378035205
+      },
+      {
+        "task_id": 53,
+        "success": true,
+        "latency": 85.96035167170174,
+        "energy": 0.24326508721313622
+      },
+      {
+        "task_id": 54,
+        "success": true,
+        "latency": 113.65231555356061,
+        "energy": 0.29048427871560567
+      },
+      {
+        "task_id": 55,
+        "success": true,
+        "latency": 108.02628864011179,
+        "energy": 0.32076273550979423
+      },
+      {
+        "task_id": 56,
+        "success": true,
+        "latency": 106.95970683009665,
+        "energy": 0.33598235885505445
+      },
+      {
+        "task_id": 57,
+        "success": true,
+        "latency": 115.34293463331375,
+        "energy": 0.3481238205413859
+      },
+      {
+        "task_id": 58,
+        "success": true,
+        "latency": 124.06535568684777,
+        "energy": 0.3469054848389168
+      },
+      {
+        "task_id": 59,
+        "success": true,
+        "latency": 97.68895930874862,
+        "energy": 0.2568976180398929
+      },
+      {
+        "task_id": 60,
+        "success": true,
+        "latency": 113.636475974109,
+        "energy": 0.30559579566392436
+      },
+      {
+        "task_id": 61,
+        "success": true,
+        "latency": 111.26863092839127,
+        "energy": 0.3094409104060045
+      },
+      {
+        "task_id": 62,
+        "success": true,
+        "latency": 120.811226385005,
+        "energy": 0.47063505006459777
+      },
+      {
+        "task_id": 63,
+        "success": true,
+        "latency": 122.96508201919092,
+        "energy": 0.49201303011419084
+      },
+      {
+        "task_id": 64,
+        "success": true,
+        "latency": 102.11602011347898,
+        "energy": 0.33185997378869536
+      },
+      {
+        "task_id": 65,
+        "success": true,
+        "latency": 77.98271975070432,
+        "energy": 0.151218335583109
+      },
+      {
+        "task_id": 66,
+        "success": true,
+        "latency": 119.03830888465238,
+        "energy": 0.4587153639624047
+      },
+      {
+        "task_id": 67,
+        "success": true,
+        "latency": 99.24058593064066,
+        "energy": 0.3407741582163841
+      },
+      {
+        "task_id": 68,
+        "success": true,
+        "latency": 84.80794905813424,
+        "energy": 0.21143613561278346
+      },
+      {
+        "task_id": 69,
+        "success": true,
+        "latency": 100.76866764600447,
+        "energy": 0.31376940149300925
+      },
+      {
+        "task_id": 70,
+        "success": true,
+        "latency": 110.22932535033397,
+        "energy": 0.3013669083419428
+      },
+      {
+        "task_id": 71,
+        "success": true,
+        "latency": 109.25492670932638,
+        "energy": 0.2924581576225173
+      },
+      {
+        "task_id": 72,
+        "success": true,
+        "latency": 106.78939073662816,
+        "energy": 0.4683489602127253
+      },
+      {
+        "task_id": 73,
+        "success": true,
+        "latency": 90.49357893940106,
+        "energy": 0.13380680307227277
+      },
+      {
+        "task_id": 74,
+        "success": true,
+        "latency": 98.32361963776796,
+        "energy": 0.24818884111655282
+      },
+      {
+        "task_id": 75,
+        "success": true,
+        "latency": 112.30714412346823,
+        "energy": 0.3125063015894136
+      },
+      {
+        "task_id": 76,
+        "success": true,
+        "latency": 100.92466452206651,
+        "energy": 0.2009747777376083
+      },
+      {
+        "task_id": 77,
+        "success": true,
+        "latency": 98.9597581678185,
+        "energy": 0.399846492803435
+      },
+      {
+        "task_id": 78,
+        "success": true,
+        "latency": 97.06374677451228,
+        "energy": 0.3130469065820093
+      },
+      {
+        "task_id": 79,
+        "success": true,
+        "latency": 93.33823808364109,
+        "energy": 0.17291355139038322
+      },
+      {
+        "task_id": 80,
+        "success": true,
+        "latency": 84.93228230533262,
+        "energy": 0.23099894087116588
+      },
+      {
+        "task_id": 81,
+        "success": true,
+        "latency": 120.41757240121441,
+        "energy": 0.3716409276577959
+      },
+      {
+        "task_id": 82,
+        "success": true,
+        "latency": 114.94629860120398,
+        "energy": 0.3336797938856677
+      },
+      {
+        "task_id": 83,
+        "success": true,
+        "latency": 102.6990657313469,
+        "energy": 0.32578341700905655
+      },
+      {
+        "task_id": 84,
+        "success": true,
+        "latency": 100.12150986661186,
+        "energy": 0.34302208891742914
+      },
+      {
+        "task_id": 85,
+        "success": true,
+        "latency": 99.82225010982731,
+        "energy": 0.34230992774275487
+      },
+      {
+        "task_id": 86,
+        "success": true,
+        "latency": 98.22418641284192,
+        "energy": 0.24614272786962307
+      },
+      {
+        "task_id": 87,
+        "success": true,
+        "latency": 84.95176179718604,
+        "energy": 0.21403806747753884
+      },
+      {
+        "task_id": 88,
+        "success": true,
+        "latency": 70.64917852068807,
+        "energy": 0.12065419114980513
+      },
+      {
+        "task_id": 89,
+        "success": true,
+        "latency": 122.29635988874195,
+        "energy": 0.4586441051896083
+      },
+      {
+        "task_id": 90,
+        "success": true,
+        "latency": 108.93577330340926,
+        "energy": 0.4268288283797119
+      },
+      {
+        "task_id": 91,
+        "success": true,
+        "latency": 123.82509159290382,
+        "energy": 0.42834458926134106
+      },
+      {
+        "task_id": 92,
+        "success": true,
+        "latency": 103.82293760855335,
+        "energy": 0.21199163746411367
+      },
+      {
+        "task_id": 93,
+        "success": true,
+        "latency": 102.82232082829617,
+        "energy": 0.38438099153469935
+      },
+      {
+        "task_id": 94,
+        "success": true,
+        "latency": 120.85814787194863,
+        "energy": 0.38289203825777784
+      },
+      {
+        "task_id": 95,
+        "success": true,
+        "latency": 89.57099187032225,
+        "energy": 0.16174508610968094
+      },
+      {
+        "task_id": 96,
+        "success": true,
+        "latency": 97.30579437140703,
+        "energy": 0.24769219260395847
+      },
+      {
+        "task_id": 97,
+        "success": true,
+        "latency": 117.91373233478893,
+        "energy": 0.4959840929559781
+      },
+      {
+        "task_id": 98,
+        "success": true,
+        "latency": 73.63973971893937,
+        "energy": 0.15552990937680816
+      },
+      {
+        "task_id": 99,
+        "success": true,
+        "latency": 100.04195679471893,
+        "energy": 0.28863047542006337
+      }
+    ]
+  }
+}

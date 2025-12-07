@@ -1,0 +1,28 @@
+{
+  "algorithms": [
+    "Random",
+    "I-DDPG",
+    "MADDPG (Decentralized)"
+  ],
+  "best_rewards": [
+    -150.0,
+    3284.18,
+    79.05
+  ],
+  "final_averages": [
+    -150.0,
+    2529.07,
+    31.41
+  ],
+  "training_times": [
+    0,
+    45.3,
+    90.1
+  ],
+  "analysis": {
+    "iddpg_vs_random_best": "2289.5%",
+    "iddpg_vs_random_avg": "1786.0%",
+    "note": "I-DDPG shows significantly better performance than Random baseline",
+    "maddpg_note": "MADDPG (Decentralized) used different reward scaling"
+  }
+}

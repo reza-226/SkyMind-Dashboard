@@ -1,0 +1,13 @@
+tier,complexity,latency_ms,energy_joules,success_rate,scalability_score,throughput
+cloud,easy,160.0,2.266,0.844,0.998,0.99
+cloud,hard,185.0,7.312,0.557,0.993,1.0
+cloud,medium,170.0,3.93,0.706,0.996,0.99
+edge,easy,115.0,0.15,0.644,0.99,0.1
+edge,hard,365.0,6.742,0.429,0.965,0.1
+edge,medium,215.0,1.012,0.542,0.98,0.1
+fog,easy,83.33,0.494,0.735,0.994,0.3
+fog,hard,166.67,4.7,0.486,0.979,0.3
+fog,medium,116.67,1.23,0.625,0.988,0.3
+ground,easy,405.0,0.177,0.484,0.98,0.02
+ground,hard,1405.0,13.157,0.321,0.93,0.02
+ground,medium,805.0,1.82,0.407,0.96,0.02

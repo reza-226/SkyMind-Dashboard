@@ -1,0 +1,9 @@
+{
+  "episode": 1,
+  "timestamp": "2025-11-25T18:36:26.146602",
+  "reward": 0.0,
+  "critic_loss": 0.0,
+  "actor_loss": 0.0,
+  "success_rate": 0.0,
+  "epsilon": 0.995
+}

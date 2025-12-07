@@ -1,0 +1,17 @@
+{
+  "training_progress": {
+    "current_episode": 301,
+    "total_episodes": 1000,
+    "progress_percent": 30.099999999999998
+  },
+  "performance_summary": {
+    "avg_reward_100": -371.62604991541195,
+    "avg_success_100": 0.0,
+    "best_reward": -21.40172642798706,
+    "total_steps": 15050
+  },
+  "network_health": {
+    "critic_loss": 21.709122710757782,
+    "actor_loss": -3.7177151838938403
+  }
+}

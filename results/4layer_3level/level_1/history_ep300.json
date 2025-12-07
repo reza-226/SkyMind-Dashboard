@@ -1,0 +1,5 @@
+{
+  "episode": 300,
+  "avg_reward": -3711.5,
+  "buffer_size": 15000
+}

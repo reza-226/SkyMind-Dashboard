@@ -1,0 +1,19 @@
+{
+  "agent": {
+    "agent_id": 0,
+    "state_dim": 10,
+    "action_dim": 5,
+    "hidden_dim": 256,
+    "lr": 0.0003,
+    "gamma": 0.99
+  },
+  "gnn": {
+    "node_feature_dim": 9,
+    "edge_feature_dim": 3,
+    "hidden_dim": 128,
+    "output_dim": 256,
+    "num_heads": 4,
+    "num_layers": 3,
+    "dropout": 0.1
+  }
+}

@@ -1,0 +1,13 @@
+layer,complexity,battery_consumption_mean,battery_consumption_std,latency_ms_mean,latency_ms_std,overload_prob_mean,overload_prob_std,success_mean,success_sum,cpu_usage_mean,cpu_usage_std
+Edge,easy,0.0435,0.0,27.3,0.0,0.05,0.0,1.0,44.0,0.9,0.0
+Edge,hard,0.0435,0.0,58.5,0.0,0.3,0.0,1.0,79.0,0.9,0.0
+Edge,medium,0.0435,0.0,39.0,0.0,0.15,0.0,1.0,66.0,0.9,0.0
+Fog,easy,0.058,0.0,45.5,0.0,0.05,0.0,1.0,56.0,0.9,0.0
+Fog,hard,0.058,0.0,97.5,0.0,0.3,0.0,1.0,121.0,0.9,0.0
+Fog,medium,0.058,0.0,65.0,0.0,0.15,0.0,1.0,101.0,0.9,0.0
+Local,easy,0.0725,,7.0,,0.075,,1.0,1.0,0.9,
+Local,hard,0.0725,,15.0,,0.45,,1.0,1.0,0.9,
+Local,medium,0.0725,0.0,10.0,0.0,0.225,0.0,1.0,3.0,0.9,0.0
+Reject,easy,0.0105,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.0
+Reject,hard,0.0105,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.0
+Reject,medium,0.0105,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.0

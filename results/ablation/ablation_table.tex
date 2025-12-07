@@ -1,0 +1,16 @@
+\begin{table}[ht]
+\centering
+\caption{Ablation Study Results}
+\label{tab:ablation}
+\begin{tabular}{lccccc}
+\toprule
+Variant & Best & Final Avg & Stability & Conv. Ep & Time (min) \\
+\midrule
+\textbf{Full Model} & \textbf{3.24} & \textbf{-27.41} & 93.26 & 50 & 94.1 \\
+No GAT & -20.24 & -87.89 & 206.52 & 50 & 94.6 \\
+No Temporal & -26.63 & -20.90 & 78.05 & 50 & 90.1 \\
+Simpler Arch & -82.69 & -438.14 & 507.81 & 50 & 25.5 \\
+Decentralized & -85.81 & -110.86 & 220.82 & 50 & 88.4 \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,412 +1,530 @@
 """
-اسکریپت نهایی آموزش MADDPG با پشتیبانی کامل از:
-- محیط‌های Dictionary-based (agent_0, agent_1, ...)
-- ساختار فایل واقعی پروژه (agents/maddpg_wrapper.py)
-- پشتیبانی 3D CollisionChecker
-- مدیریت خودکار Discrete/Continuous action spaces
-- ذخیره و بارگذاری مدل‌ها
-- لاگ‌گیری TensorBoard
+train_maddpg_complete.py
+Complete MADDPG Training Pipeline with Curriculum Learning - DIMENSION FIX
 """
 
 import os
 import sys
+import time
+import logging
+from datetime import datetime
+from pathlib import Path
+
 import numpy as np
 import torch
-from pathlib import Path
-from typing import Dict, List, Tuple, Optional
-from collections import deque
-import matplotlib.pyplot as plt
-from datetime import datetime
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.tensorboard import SummaryWriter
+from tqdm import tqdm
 
-# 🔧 Patch CollisionChecker برای سازگاری 3D
-sys.path.insert(0, str(Path(__file__).parent / "core"))
-from collision_checker_patch import patch_collision_checker
-patch_collision_checker()  # اعمال پچ قبل از ساخت محیط
+# PettingZoo
+from pettingzoo.mpe import simple_tag_v3
 
-# اضافه کردن مسیر پروژه
-project_root = Path(__file__).parent
-sys.path.insert(0, str(project_root))
-sys.path.insert(0, str(project_root / 'core'))
-sys.path.insert(0, str(project_root / 'agents'))
+# Local imports
+sys.path.append(str(Path(__file__).parent))
+from configs.curriculum_config import TRAINING_CONFIG, CURRICULUM_STAGES
+from utils.ou_noise import OUNoise
 
-# Import محیط
-from core.env_multi import MultiUAVEnv
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('training.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
-# Import Agent
-from agents.maddpg_wrapper import MADDPGAgent
 
-# Import یوتیلیتی‌ها
-try:
-    from torch.utils.tensorboard import SummaryWriter
-    TENSORBOARD_AVAILABLE = True
-except ImportError:
-    TENSORBOARD_AVAILABLE = False
-    print("⚠️ TensorBoard not available. Install with: pip install tensorboard")
+class Actor(nn.Module):
+    """Actor Network"""
+    
+    def __init__(self, obs_dim, action_dim, hidden_dim=256):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(obs_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, action_dim),
+            nn.Sigmoid()  # Actions in [0, 1]
+        )
+        
+    def forward(self, obs):
+        return self.net(obs)
+
+
+class Critic(nn.Module):
+    """Centralized Critic Network"""
+    
+    def __init__(self, total_obs_dim, total_action_dim, hidden_dim=256):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(total_obs_dim + total_action_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, 1)
+        )
+        
+    def forward(self, obs, actions):
+        x = torch.cat([obs, actions], dim=-1)
+        return self.net(x)
+
+
+class MADDPGAgent:
+    """MADDPG Agent with Exploration Noise"""
+    
+    def __init__(self, obs_dim, action_dim, agent_id, config, device='cpu'):
+        self.agent_id = agent_id
+        self.obs_dim = obs_dim
+        self.action_dim = action_dim
+        self.device = device
+        
+        # Networks
+        hidden_dim = config['hidden_dim']
+        self.actor = Actor(obs_dim, action_dim, hidden_dim).to(device)
+        self.actor_target = Actor(obs_dim, action_dim, hidden_dim).to(device)
+        self.actor_target.load_state_dict(self.actor.state_dict())
+        
+        # Optimizers
+        self.actor_optimizer = optim.Adam(
+            self.actor.parameters(), 
+            lr=config['lr_actor']
+        )
+        
+        # Exploration noise
+        self.noise = OUNoise(action_dim)
+        self.exploration_noise = config['exploration_noise']
+        
+    def select_action(self, obs, add_noise=True):
+        """Select action with optional exploration noise"""
+        with torch.no_grad():
+            obs_tensor = torch.FloatTensor(obs).unsqueeze(0).to(self.device)
+            action = self.actor(obs_tensor).cpu().numpy()[0]
+            
+            if add_noise:
+                noise = self.noise.sample() * self.exploration_noise
+                action = np.clip(action + noise, 0, 1)
+                
+        return action
+    
+    def update_target(self, tau):
+        """Soft update of target network"""
+        for param, target_param in zip(
+            self.actor.parameters(), 
+            self.actor_target.parameters()
+        ):
+            target_param.data.copy_(
+                tau * param.data + (1 - tau) * target_param.data
+            )
 
 
 class ReplayBuffer:
-    """
-    بافر تجربه برای ذخیره و نمونه‌برداری تجربیات
-    """
-    def __init__(self, capacity: int = 100000):
-        self.buffer = deque(maxlen=capacity)
+    """Experience Replay Buffer"""
     
-    def add(
-        self, 
-        states: Dict[str, np.ndarray], 
-        actions: Dict[str, np.ndarray],
-        rewards: Dict[str, float],
-        next_states: Dict[str, np.ndarray],
-        dones: Dict[str, bool]
-    ):
-        """افزودن یک تجربه"""
-        self.buffer.append((states, actions, rewards, next_states, dones))
-    
-    def sample(self, batch_size: int) -> Tuple:
-        """نمونه‌برداری تصادفی"""
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.buffer = []
+        self.position = 0
+        
+    def push(self, experience):
+        """Add experience to buffer"""
+        if len(self.buffer) < self.capacity:
+            self.buffer.append(None)
+        self.buffer[self.position] = experience
+        self.position = (self.position + 1) % self.capacity
+        
+    def sample(self, batch_size):
+        """Sample random batch"""
         indices = np.random.choice(len(self.buffer), batch_size, replace=False)
-        
-        batch_states = []
-        batch_actions = []
-        batch_rewards = []
-        batch_next_states = []
-        batch_dones = []
-        
-        for idx in indices:
-            states, actions, rewards, next_states, dones = self.buffer[idx]
-            batch_states.append(states)
-            batch_actions.append(actions)
-            batch_rewards.append(rewards)
-            batch_next_states.append(next_states)
-            batch_dones.append(dones)
-        
-        return batch_states, batch_actions, batch_rewards, batch_next_states, batch_dones
+        return [self.buffer[i] for i in indices]
     
     def __len__(self):
         return len(self.buffer)
 
 
-def create_env(config: Optional[Dict] = None) -> MultiUAVEnv:
-    """
-    ساخت محیط با پارامترهای صحیح
-    """
-    default_config = {
-        'num_uavs': 3,           # پارامتر صحیح (نه n_uavs)
-        'map_size': 100,
-        'num_obstacles': 10,
-        'max_steps': 500,
-        'render_mode': None
-    }
+class MADDPGTrainer:
+    """MADDPG Trainer with Curriculum Learning"""
     
-    if config:
-        default_config.update(config)
-    
-    print(f"🏗️ Creating environment with config: {default_config}")
-    
-    try:
-        env = MultiUAVEnv(**default_config)
+    def __init__(self, env, config, stage_name='Level1'):
+        self.env = env
+        self.config = config
+        self.stage_name = stage_name
+        self.device = torch.device(config['device'])
         
-        # افزودن alias برای سازگاری
-        if hasattr(env, 'num_uavs') and not hasattr(env, 'n_agents'):
-            env.n_agents = env.num_uavs
+        # Get environment info - FIX: Use parallel API with per-agent dimensions
+        obs, _ = self.env.reset()
+        self.agents = list(obs.keys())
+        self.num_agents = len(self.agents)
         
-        print(f"✅ Environment created: {env.num_uavs} UAVs")
-        return env
+        # ✅ FIX: Get observation dimensions PER AGENT
+        self.obs_dims = {}
+        self.action_dim = None
         
-    except Exception as e:
-        print(f"❌ Error creating environment: {e}")
-        raise
-
-
-def get_state_action_dims(env: MultiUAVEnv) -> Tuple[int, int]:
-    """
-    استخراج ابعاد state و action از محیط
-    """
-    # دریافت یک نمونه state
-    states, _ = env.reset()
-    
-    # استخراج state_dim از اولین agent
-    first_agent_key = list(states.keys())[0]
-    sample_state = states[first_agent_key]
-    state_dim = sample_state.flatten().shape[0]
-    
-    # استخراج action_dim
-    sample_action_space = env.action_space
-    
-    if hasattr(sample_action_space, 'n'):
-        # Discrete action space
-        act_dim = sample_action_space.n
-        print(f"📊 Discrete action space detected: {act_dim} actions")
-    elif hasattr(sample_action_space, 'shape'):
-        # Continuous action space
-        act_dim = sample_action_space.shape[0] if len(sample_action_space.shape) > 0 else 2
-        print(f"📊 Continuous action space detected: {act_dim}D")
-    else:
-        # Fallback: فرض کن 2D continuous
-        act_dim = 2
-        print(f"⚠️ Unknown action space, assuming 2D continuous")
-    
-    print(f"📐 State dim: {state_dim}, Action dim: {act_dim}")
-    
-    return state_dim, act_dim
-
-
-def train_maddpg(
-    env: MultiUAVEnv,
-    n_episodes: int = 1000,
-    max_steps: int = 500,
-    batch_size: int = 64,
-    buffer_capacity: int = 100000,
-    update_freq: int = 100,
-    save_freq: int = 100,
-    log_dir: str = "runs",
-    model_dir: str = "models"
-):
-    """
-    حلقه اصلی آموزش MADDPG
-    """
-    
-    # ایجاد دایرکتوری‌ها
-    Path(log_dir).mkdir(exist_ok=True)
-    Path(model_dir).mkdir(exist_ok=True)
-    
-    # TensorBoard
-    writer = None
-    if TENSORBOARD_AVAILABLE:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        writer = SummaryWriter(f"{log_dir}/maddpg_{timestamp}")
-    
-    # استخراج ابعاد
-    state_dim, act_dim = get_state_action_dims(env)
-    n_agents = env.num_uavs
-    
-    print(f"\n{'='*70}")
-    print(f"🚀 Starting MADDPG Training")
-    print(f"{'='*70}")
-    print(f"Agents: {n_agents}")
-    print(f"State dim: {state_dim}, Action dim: {act_dim}")
-    print(f"Episodes: {n_episodes}, Max steps: {max_steps}")
-    print(f"Batch size: {batch_size}, Buffer: {buffer_capacity}")
-    print(f"{'='*70}\n")
-    
-    # ساخت Agents
-    agents = {}
-    for i in range(n_agents):
-        agent_id = f"agent_{i}"
-        agents[agent_id] = MADDPGAgent(
-            state_dim=state_dim,
-            action_dim=act_dim,
-            n_agents=n_agents,
-            agent_id=i,
-            hidden_dim=256,
-            lr_actor=1e-4,
-            lr_critic=1e-3,
-            gamma=0.99,
-            tau=0.01
+        for agent_id in self.agents:
+            self.obs_dims[agent_id] = self.env.observation_space(agent_id).shape[0]
+            if self.action_dim is None:
+                self.action_dim = self.env.action_space(agent_id).shape[0]
+        
+        logger.info(f"Environment: {self.num_agents} agents")
+        logger.info(f"Agents: {self.agents}")
+        logger.info(f"Observation dimensions per agent:")
+        for agent_id, obs_dim in self.obs_dims.items():
+            logger.info(f"  {agent_id}: obs_dim={obs_dim}")
+        logger.info(f"Action dim (shared): {self.action_dim}")
+        
+        # Initialize agents with INDIVIDUAL observation dimensions
+        self.maddpg_agents = {}
+        for agent_id in self.agents:
+            self.maddpg_agents[agent_id] = MADDPGAgent(
+                self.obs_dims[agent_id],  # ✅ Per-agent dimension
+                self.action_dim,
+                agent_id,
+                config,
+                self.device
+            )
+        
+        # Centralized critic with TOTAL observation dimension
+        total_obs_dim = sum(self.obs_dims.values())
+        total_action_dim = self.action_dim * self.num_agents
+        
+        logger.info(f"Critic input: obs_dim={total_obs_dim}, action_dim={total_action_dim}")
+        
+        self.critic = Critic(
+            total_obs_dim, 
+            total_action_dim,
+            config['hidden_dim']
+        ).to(self.device)
+        self.critic_target = Critic(
+            total_obs_dim,
+            total_action_dim,
+            config['hidden_dim']
+        ).to(self.device)
+        self.critic_target.load_state_dict(self.critic.state_dict())
+        
+        self.critic_optimizer = optim.Adam(
+            self.critic.parameters(),
+            lr=config['lr_critic']
         )
-    
-    # Replay Buffer
-    replay_buffer = ReplayBuffer(capacity=buffer_capacity)
-    
-    # آمار آموزش
-    episode_rewards = []
-    episode_losses = []
-    best_avg_reward = -float('inf')
-    
-    # حلقه اصلی آموزش
-    for episode in range(n_episodes):
-        states, _ = env.reset()
-        episode_reward = {agent_id: 0.0 for agent_id in agents.keys()}
-        episode_loss = {agent_id: [] for agent_id in agents.keys()}
         
-        for step in range(max_steps):
-            # انتخاب actions
-            actions = {}
-            for agent_id, agent in agents.items():
-                state = states[agent_id].flatten()
+        # Replay buffer
+        self.replay_buffer = ReplayBuffer(config['buffer_size'])
+        
+        # TensorBoard
+        log_dir = f"runs/{stage_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        self.writer = SummaryWriter(log_dir)
+        
+        # Metrics
+        self.episode_rewards = {agent_id: [] for agent_id in self.agents}
+        self.best_reward = -float('inf')
+        
+    def train(self, total_episodes):
+        """Main training loop"""
+        logger.info(f"Starting training: {total_episodes} episodes")
+        
+        pbar = tqdm(range(total_episodes), desc=f"Training {self.stage_name}")
+        
+        for episode in pbar:
+            episode_reward = self.run_episode(train=True)
+            
+            # Decay exploration noise
+            for agent in self.maddpg_agents.values():
+                agent.exploration_noise = max(
+                    self.config['min_noise'],
+                    agent.exploration_noise * self.config['noise_decay']
+                )
+            
+            # Logging
+            if episode % self.config['log_frequency'] == 0:
+                self.log_metrics(episode, episode_reward)
                 
-                # اضافه کردن نویز برای اکتشاف
-                action = agent.select_action(state, add_noise=True)
-                actions[agent_id] = action
+            # Evaluation
+            if episode % self.config['eval_frequency'] == 0:
+                eval_reward = self.evaluate(num_episodes=10)
+                self.writer.add_scalar('eval/mean_reward', eval_reward, episode)
+                logger.info(f"Episode {episode}: Eval reward = {eval_reward:.2f}")
+                
+            # Save checkpoint
+            if episode % self.config['save_frequency'] == 0:
+                self.save_checkpoint(episode)
+                
+            # Update progress bar
+            mean_reward = np.mean(list(episode_reward.values()))
+            pbar.set_postfix({
+                'reward': f"{mean_reward:.2f}",
+                'noise': f"{self.maddpg_agents[self.agents[0]].exploration_noise:.3f}"
+            })
+        
+        # Save final model
+        self.save_checkpoint('final')
+        logger.info(f"Training {self.stage_name} completed!")
+        
+    def run_episode(self, train=True):
+        """Run single episode using parallel API"""
+        observations, infos = self.env.reset()
+        episode_reward = {agent_id: 0 for agent_id in self.agents}
+        done = False
+        step = 0
+        max_steps = 50  # Max steps per episode
+        
+        while not done and step < max_steps:
+            # Select actions for all agents
+            actions = {}
+            for agent_id in self.agents:
+                obs = observations[agent_id]
+                add_noise = train
+                actions[agent_id] = self.maddpg_agents[agent_id].select_action(
+                    obs, add_noise
+                )
             
-            # اجرای action در محیط
-            next_states, rewards, dones, truncated, _ = env.step(actions)
+            # Step environment
+            next_observations, rewards, terminations, truncations, infos = self.env.step(actions)
             
-            # ذخیره در بافر
-            replay_buffer.add(states, actions, rewards, next_states, dones)
-            
-            # به‌روزرسانی rewards
-            for agent_id in agents.keys():
+            # Update episode rewards
+            for agent_id in self.agents:
                 episode_reward[agent_id] += rewards[agent_id]
             
-            # آموزش agents (اگر بافر کافی باشد)
-            if len(replay_buffer) > batch_size:
-                # نمونه‌برداری از بافر
-                batch = replay_buffer.sample(batch_size)
-                batch_states, batch_actions, batch_rewards, batch_next_states, batch_dones = batch
+            # Store experience
+            if train:
+                # Prepare all observations and actions (order-consistent)
+                all_obs = [observations[aid] for aid in self.agents]
+                all_actions = [actions[aid] for aid in self.agents]
+                all_next_obs = [next_observations[aid] for aid in self.agents]
+                all_rewards = [rewards[aid] for aid in self.agents]
+                all_dones = [terminations[aid] or truncations[aid] for aid in self.agents]
                 
-                # آموزش هر agent
-                for agent_id, agent in agents.items():
-                    # استخراج داده‌های این agent
-                    agent_states = np.array([s[agent_id].flatten() for s in batch_states])
-                    agent_actions = np.array([a[agent_id] for a in batch_actions])
-                    agent_rewards = np.array([r[agent_id] for r in batch_rewards])
-                    agent_next_states = np.array([s[agent_id].flatten() for s in batch_next_states])
-                    agent_dones = np.array([d[agent_id] for d in batch_dones])
-                    
-                    # جمع‌آوری اطلاعات سایر agents
-                    all_states = np.array([[s[aid].flatten() for aid in agents.keys()] 
-                                          for s in batch_states])
-                    all_actions = np.array([[a[aid] for aid in agents.keys()] 
-                                           for a in batch_actions])
-                    all_next_states = np.array([[s[aid].flatten() for aid in agents.keys()] 
-                                                for s in batch_next_states])
-                    
-                    # آموزش
-                    critic_loss, actor_loss = agent.update(
-                        agent_states,
-                        agent_actions,
-                        agent_rewards,
-                        agent_next_states,
-                        agent_dones,
-                        all_states,
-                        all_actions,
-                        all_next_states
-                    )
-                    
-                    episode_loss[agent_id].append((critic_loss, actor_loss))
+                self.replay_buffer.push({
+                    'obs': all_obs,
+                    'actions': all_actions,
+                    'rewards': all_rewards,
+                    'next_obs': all_next_obs,
+                    'dones': all_dones
+                })
             
-            # به‌روزرسانی state
-            states = next_states
+            # Check if episode is done
+            done = all(terminations.values()) or all(truncations.values())
             
-            # بررسی پایان
-            if all(dones.values()) or all(truncated.values()):
-                break
+            # Update observations
+            observations = next_observations
+            step += 1
         
-        # آمار episode
-        avg_reward = np.mean(list(episode_reward.values()))
-        episode_rewards.append(avg_reward)
+        # Update networks
+        if train and len(self.replay_buffer) >= self.config['min_buffer_size']:
+            for _ in range(4):  # Multiple updates per episode
+                self.update_networks()
         
-        # محاسبه میانگین loss
-        avg_losses = {}
-        for agent_id in agents.keys():
-            if episode_loss[agent_id]:
-                critic_losses, actor_losses = zip(*episode_loss[agent_id])
-                avg_losses[agent_id] = {
-                    'critic': np.mean(critic_losses),
-                    'actor': np.mean(actor_losses)
-                }
+        return episode_reward
+    
+    def update_networks(self):
+        """Update actor and critic networks"""
+        batch = self.replay_buffer.sample(self.config['batch_size'])
         
-        # لاگ‌گیری
-        if writer:
-            writer.add_scalar('Train/AverageReward', avg_reward, episode)
-            for agent_id, losses in avg_losses.items():
-                writer.add_scalar(f'Train/{agent_id}/CriticLoss', losses['critic'], episode)
-                writer.add_scalar(f'Train/{agent_id}/ActorLoss', losses['actor'], episode)
+        # ✅ FIX: Prepare batch with variable-length observations
+        obs_list = []
+        next_obs_list = []
         
-        # چاپ پیشرفت
-        if (episode + 1) % 10 == 0:
-            recent_avg = np.mean(episode_rewards[-100:])
-            print(f"Episode {episode+1}/{n_episodes} | "
-                  f"Avg Reward: {avg_reward:.2f} | "
-                  f"Recent 100: {recent_avg:.2f} | "
-                  f"Buffer: {len(replay_buffer)}")
+        for exp in batch:
+            # Concatenate observations from all agents
+            obs_concat = np.concatenate(exp['obs'])
+            next_obs_concat = np.concatenate(exp['next_obs'])
+            obs_list.append(obs_concat)
+            next_obs_list.append(next_obs_concat)
         
-        # ذخیره بهترین مدل
-        if (episode + 1) % save_freq == 0:
-            recent_avg = np.mean(episode_rewards[-100:])
-            if recent_avg > best_avg_reward:
-                best_avg_reward = recent_avg
-                for agent_id, agent in agents.items():
-                    agent.save(f"{model_dir}/{agent_id}_best.pth")
-                print(f"💾 Best model saved! Avg reward: {best_avg_reward:.2f}")
+        obs_batch = torch.FloatTensor(obs_list).to(self.device)
         
-        # ذخیره چک‌پوینت
-        if (episode + 1) % save_freq == 0:
-            for agent_id, agent in agents.items():
-                agent.save(f"{model_dir}/{agent_id}_ep{episode+1}.pth")
+        actions_batch = torch.FloatTensor([
+            np.concatenate(exp['actions']) for exp in batch
+        ]).to(self.device)
+        
+        rewards_batch = torch.FloatTensor([
+            np.mean(exp['rewards']) for exp in batch
+        ]).unsqueeze(1).to(self.device)
+        
+        next_obs_batch = torch.FloatTensor(next_obs_list).to(self.device)
+        
+        dones_batch = torch.FloatTensor([
+            float(any(exp['dones'])) for exp in batch
+        ]).unsqueeze(1).to(self.device)
+        
+        # Update Critic
+        with torch.no_grad():
+            next_actions = []
+            start_idx = 0
+            for agent_id in self.agents:
+                obs_dim = self.obs_dims[agent_id]
+                next_obs_agent = next_obs_batch[:, start_idx:start_idx + obs_dim]
+                next_action = self.maddpg_agents[agent_id].actor_target(next_obs_agent)
+                next_actions.append(next_action)
+                start_idx += obs_dim
+            next_actions = torch.cat(next_actions, dim=1)
+            
+            target_q = self.critic_target(next_obs_batch, next_actions)
+            target_q = rewards_batch + self.config['gamma'] * target_q * (1 - dones_batch)
+        
+        current_q = self.critic(obs_batch, actions_batch)
+        critic_loss = nn.MSELoss()(current_q, target_q)
+        
+        self.critic_optimizer.zero_grad()
+        critic_loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.critic.parameters(), 0.5)
+        self.critic_optimizer.step()
+        
+        # Update Actors
+        start_idx = 0
+        for i, agent_id in enumerate(self.agents):
+            obs_dim = self.obs_dims[agent_id]
+            obs_agent = obs_batch[:, start_idx:start_idx + obs_dim]
+            
+            # Compute actor loss
+            actions = []
+            action_start_idx = 0
+            for j, aid in enumerate(self.agents):
+                aid_obs_dim = self.obs_dims[aid]
+                obs_other = obs_batch[:, action_start_idx:action_start_idx + aid_obs_dim]
+                
+                if aid == agent_id:
+                    actions.append(self.maddpg_agents[aid].actor(obs_agent))
+                else:
+                    with torch.no_grad():
+                        actions.append(self.maddpg_agents[aid].actor(obs_other))
+                
+                action_start_idx += aid_obs_dim
+            
+            actions = torch.cat(actions, dim=1)
+            
+            actor_loss = -self.critic(obs_batch, actions).mean()
+            
+            self.maddpg_agents[agent_id].actor_optimizer.zero_grad()
+            actor_loss.backward()
+            torch.nn.utils.clip_grad_norm_(
+                self.maddpg_agents[agent_id].actor.parameters(), 0.5
+            )
+            self.maddpg_agents[agent_id].actor_optimizer.step()
+            
+            start_idx += obs_dim
+        
+        # Soft update
+        for agent in self.maddpg_agents.values():
+            agent.update_target(self.config['tau'])
+        
+        # Update critic target
+        for param, target_param in zip(
+            self.critic.parameters(), 
+            self.critic_target.parameters()
+        ):
+            target_param.data.copy_(
+                self.config['tau'] * param.data + 
+                (1 - self.config['tau']) * target_param.data
+            )
     
-    # بستن writer
-    if writer:
-        writer.close()
+    def evaluate(self, num_episodes=10):
+        """Evaluate current policy"""
+        total_reward = 0
+        for _ in range(num_episodes):
+            episode_reward = self.run_episode(train=False)
+            total_reward += np.mean(list(episode_reward.values()))
+        return total_reward / num_episodes
     
-    # رسم نمودار rewards
-    plt.figure(figsize=(10, 6))
-    plt.plot(episode_rewards, alpha=0.6, label='Episode Reward')
+    def log_metrics(self, episode, episode_reward):
+        """Log metrics to TensorBoard"""
+        mean_reward = np.mean(list(episode_reward.values()))
+        self.writer.add_scalar('train/mean_reward', mean_reward, episode)
+        
+        # Log per-agent rewards
+        for agent_id, reward in episode_reward.items():
+            self.writer.add_scalar(f'train/reward_{agent_id}', reward, episode)
+        
+        self.writer.add_scalar(
+            'train/exploration_noise',
+            self.maddpg_agents[self.agents[0]].exploration_noise,
+            episode
+        )
+        self.writer.add_scalar('train/buffer_size', len(self.replay_buffer), episode)
     
-    # میانگین متحرک
-    window = 100
-    if len(episode_rewards) >= window:
-        moving_avg = np.convolve(episode_rewards, 
-                                np.ones(window)/window, 
-                                mode='valid')
-        plt.plot(range(window-1, len(episode_rewards)), 
-                moving_avg, 
-                'r-', 
-                linewidth=2, 
-                label=f'{window}-Episode Moving Average')
+    def save_checkpoint(self, episode):
+        """Save model checkpoint"""
+        save_dir = f"models/{self.stage_name}/checkpoint_{episode}"
+        os.makedirs(save_dir, exist_ok=True)
+        
+        for agent_id, agent in self.maddpg_agents.items():
+            torch.save(
+                agent.actor.state_dict(),
+                f"{save_dir}/{agent_id}.pth"
+            )
+        
+        torch.save(self.critic.state_dict(), f"{save_dir}/critic.pth")
+        logger.info(f"Saved checkpoint: {save_dir}")
     
-    plt.xlabel('Episode')
-    plt.ylabel('Average Reward')
-    plt.title('MADDPG Training Progress')
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-    plt.savefig(f"{log_dir}/training_rewards.png", dpi=150, bbox_inches='tight')
-    plt.close()
-    
-    print(f"\n{'='*70}")
-    print(f"✅ Training completed!")
-    print(f"Best average reward: {best_avg_reward:.2f}")
-    print(f"Final average reward (last 100 eps): {np.mean(episode_rewards[-100:]):.2f}")
-    print(f"{'='*70}\n")
-    
-    return agents, episode_rewards
+    def load_checkpoint(self, checkpoint_dir):
+        """Load model checkpoint"""
+        for agent_id, agent in self.maddpg_agents.items():
+            checkpoint_path = f"{checkpoint_dir}/{agent_id}.pth"
+            if os.path.exists(checkpoint_path):
+                agent.actor.load_state_dict(
+                    torch.load(checkpoint_path, map_location=self.device)
+                )
+                agent.actor_target.load_state_dict(agent.actor.state_dict())
+                logger.info(f"Loaded {agent_id} from {checkpoint_path}")
+
+
+def create_env(env_config):
+    """Create environment from config"""
+    return simple_tag_v3.parallel_env(
+        num_good=env_config['num_good'],
+        num_adversaries=env_config['num_adversaries'],
+        num_obstacles=env_config['num_obstacles'],
+        max_cycles=50,
+        continuous_actions=True
+    )
 
 
 def main():
-    """
-    تابع اصلی
-    """
-    # تنظیمات محیط
-    env_config = {
-        'num_uavs': 3,
-        'map_size': 100,
-        'num_obstacles': 10,
-        'max_steps': 500,
-        'render_mode': None
-    }
+    """Main curriculum training pipeline"""
+    logger.info("="*80)
+    logger.info("MADDPG Curriculum Training Pipeline")
+    logger.info("="*80)
     
-    # ساخت محیط
-    env = create_env(env_config)
+    prev_checkpoint = None
     
-    # تنظیمات آموزش
-    train_config = {
-        'n_episodes': 1000,
-        'max_steps': 500,
-        'batch_size': 64,
-        'buffer_capacity': 100000,
-        'update_freq': 100,
-        'save_freq': 100,
-        'log_dir': 'runs',
-        'model_dir': 'models'
-    }
-    
-    # شروع آموزش
-    try:
-        agents, rewards = train_maddpg(env, **train_config)
-        print("🎉 Training finished successfully!")
+    for stage in CURRICULUM_STAGES:
+        logger.info(f"\n{'='*80}")
+        logger.info(f"Stage: {stage['name']}")
+        logger.info(f"Description: {stage['description']}")
+        logger.info(f"Episodes: {stage['episodes']}")
+        logger.info(f"{'='*80}\n")
         
-    except KeyboardInterrupt:
-        print("\n⚠️ Training interrupted by user")
+        # Create environment
+        env = create_env(stage['env_config'])
         
-    except Exception as e:
-        print(f"\n❌ Training failed with error: {e}")
-        import traceback
-        traceback.print_exc()
+        # Create trainer
+        trainer = MADDPGTrainer(env, TRAINING_CONFIG, stage['name'])
         
-    finally:
+        # Transfer learning
+        if prev_checkpoint is not None:
+            logger.info(f"Loading previous checkpoint: {prev_checkpoint}")
+            try:
+                trainer.load_checkpoint(prev_checkpoint)
+            except Exception as e:
+                logger.warning(f"Could not load checkpoint: {e}")
+        
+        # Train
+        start_time = time.time()
+        trainer.train(stage['episodes'])
+        elapsed = time.time() - start_time
+        
+        logger.info(f"Stage {stage['name']} completed in {elapsed/3600:.2f} hours")
+        
+        # Update checkpoint path
+        prev_checkpoint = f"models/{stage['name']}/checkpoint_final"
+        
+        # Close environment
         env.close()
-        print("🔒 Environment closed")
+    
+    logger.info("\n" + "="*80)
+    logger.info("🎉 All training stages completed successfully!")
+    logger.info("="*80)
 
 
 if __name__ == "__main__":

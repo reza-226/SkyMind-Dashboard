@@ -1,0 +1,12 @@
+{
+  "total_episodes": 4000,
+  "stages": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "best_episode": 3490,
+  "best_reward": -2.7391925062274436,
+  "overall_avg_reward": -15.817567297583315,
+  "recent_100_avg_reward": -12.266977991188403
+}

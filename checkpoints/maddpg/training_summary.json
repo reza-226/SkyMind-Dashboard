@@ -1,0 +1,10 @@
+{
+  "total_episodes": 1000,
+  "total_steps": 51923,
+  "best_episode": 332,
+  "best_reward": 1390.9802342656712,
+  "final_avg_100": 1355.707450100072,
+  "final_noise": 0.26,
+  "training_time_seconds": 88562,
+  "timestamp": "2025-12-06 16:47:15"
+}

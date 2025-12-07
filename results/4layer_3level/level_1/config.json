@@ -1,0 +1,20 @@
+{
+  "level": "level_1",
+  "level_name": "\u0633\u0627\u062f\u0647 (Testing)",
+  "state_dim": 71,
+  "action_dim": 7,
+  "env_config": {
+    "num_uavs": 3,
+    "num_devices": 5,
+    "num_edge_servers": 2,
+    "grid_size": 500.0,
+    "max_steps": 50
+  },
+  "training_config": {
+    "episodes": 500,
+    "batch_size": 64,
+    "warmup": 100
+  },
+  "device": "cpu",
+  "timestamp": "2025-12-04T14:14:15.915887"
+}

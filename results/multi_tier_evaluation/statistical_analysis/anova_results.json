@@ -1,0 +1,42 @@
+{
+  "latency": {
+    "tier": {
+      "F-statistic": 5.456924668009404,
+      "p-value": 0.02452191460841368
+    },
+    "complexity": {
+      "F-statistic": 0.7417175463737096,
+      "p-value": 0.5032978145556888
+    }
+  },
+  "energy": {
+    "tier": {
+      "F-statistic": 0.3212710169012673,
+      "p-value": 0.8100608765013584
+    },
+    "complexity": {
+      "F-statistic": 11.168925235009635,
+      "p-value": 0.003645691155216474
+    }
+  },
+  "success_rate": {
+    "tier": {
+      "F-statistic": 3.522097392524847,
+      "p-value": 0.06857694580167907
+    },
+    "complexity": {
+      "F-statistic": 3.1831356494768746,
+      "p-value": 0.0900602312508536
+    }
+  },
+  "throughput": {
+    "tier": {
+      "F-statistic": 70528.00000000779,
+      "p-value": 5.028714614241139e-18
+    },
+    "complexity": {
+      "F-statistic": 4.25350914504467e-05,
+      "p-value": 0.9999574660141696
+    }
+  }
+}

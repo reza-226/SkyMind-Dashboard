@@ -1,0 +1,4 @@
+batch_size: 64
+episodes: 5000
+gamma: 0.95
+learning_rate: 0.001
