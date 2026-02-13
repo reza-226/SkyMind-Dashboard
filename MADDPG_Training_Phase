@@ -1,0 +1,79 @@
+digraph MADDPG_Training {
+	bgcolor=white dpi=300 rankdir=TB size="18,12!"
+	node [fontname=Arial fontsize=13 margin="0.3,0.15" shape=box style="rounded,filled"]
+	edge [fontname=Arial fontsize=11]
+	title_train [label="🎓 TRAINING PHASE (Centralized Training)
+مرحله آموزش - Critic متمرکز" color="#1976D2" fillcolor="#BBDEFB" fontcolor="#0D47A1" fontname="Arial Bold" fontsize=18 penwidth=3 shape=box style="filled,bold"]
+	title_train -> uav1 [style=invis]
+	subgraph cluster_uavs {
+		label="" rank=same style=invis
+		uav1 [label="🚁 UAV 1
+(Agent 1)" fillcolor="#E0E0E0" fontcolor=black]
+		uav2 [label="🚁 UAV 2
+(Agent 2)" fillcolor="#E0E0E0" fontcolor=black]
+		uav3 [label="🚁 UAV 3
+(Agent 3)" fillcolor="#E0E0E0" fontcolor=black]
+		uav4 [label="🚁 UAV 4
+(Agent 4)" fillcolor="#E0E0E0" fontcolor=black]
+	}
+	subgraph cluster_actors {
+		label="" rank=same style=invis
+		actor1 [label="🎭 Actor₁
+π(o₁; θ₁)" fillcolor="#FF6B6B" fontcolor=white]
+		actor2 [label="🎭 Actor₂
+π(o₂; θ₂)" fillcolor="#4ECDC4" fontcolor=white]
+		actor3 [label="🎭 Actor₃
+π(o₃; θ₃)" fillcolor="#45B7D1" fontcolor=white]
+		actor4 [label="🎭 Actor₄
+π(o₄; θ₄)" fillcolor="#FFA07A" fontcolor=white]
+	}
+	actions_collector [label="📦 Centralized State-Action
+[s, a₁, a₂, a₃, a₄]
+(432+55=487 dim)" color="#7B1FA2" fillcolor="#E1BEE7" fontcolor="#4A148C" penwidth=2 shape=box style="rounded,filled,bold"]
+	subgraph cluster_critics {
+		label="" rank=same style=invis
+		critic1 [label="🧠 Critic₁
+Q₁(s, a; ϕ₁)" fillcolor="#FFB6C1" fontcolor="#880E4F"]
+		critic2 [label="🧠 Critic₂
+Q₂(s, a; ϕ₂)" fillcolor="#87CEEB" fontcolor="#01579B"]
+		critic3 [label="🧠 Critic₃
+Q₃(s, a; ϕ₃)" fillcolor="#98D8C8" fontcolor="#004D40"]
+		critic4 [label="🧠 Critic₄
+Q₄(s, a; ϕ₄)" fillcolor="#F7DC6F" fontcolor="#F57F17"]
+	}
+	subgraph cluster_qvals {
+		label="" rank=same style=invis
+		q1 [label="💎 Q₁-value" fillcolor="#FFEB3B" fontcolor="#F57F17" penwidth=2 shape=ellipse style="filled,bold"]
+		q2 [label="💎 Q₂-value" fillcolor="#FFEB3B" fontcolor="#F57F17" penwidth=2 shape=ellipse style="filled,bold"]
+		q3 [label="💎 Q₃-value" fillcolor="#FFEB3B" fontcolor="#F57F17" penwidth=2 shape=ellipse style="filled,bold"]
+		q4 [label="💎 Q₄-value" fillcolor="#FFEB3B" fontcolor="#F57F17" penwidth=2 shape=ellipse style="filled,bold"]
+	}
+	uav1 -> actor1 [label="o1
+(local obs)" color=black fontcolor="#424242" penwidth=2]
+	uav2 -> actor2 [label="o2
+(local obs)" color=black fontcolor="#424242" penwidth=2]
+	uav3 -> actor3 [label="o3
+(local obs)" color=black fontcolor="#424242" penwidth=2]
+	uav4 -> actor4 [label="o4
+(local obs)" color=black fontcolor="#424242" penwidth=2]
+	actor1 -> actions_collector [label="a₁ ∈ ℝ¹¹" color="#2E7D32" fontcolor="#2E7D32" penwidth=2.5 style=bold]
+	actor2 -> actions_collector [label="a₂ ∈ ℝ¹¹" color="#2E7D32" fontcolor="#2E7D32" penwidth=2.5 style=bold]
+	actor3 -> actions_collector [label="a₃ ∈ ℝ¹¹" color="#2E7D32" fontcolor="#2E7D32" penwidth=2.5 style=bold]
+	actor4 -> actions_collector [label="a₄ ∈ ℝ¹¹" color="#2E7D32" fontcolor="#2E7D32" penwidth=2.5 style=bold]
+	actions_collector -> critic1 [label="All states
++ All actions" color="#6A1B9A" fontcolor="#6A1B9A" penwidth=2.5 style=dashed]
+	actions_collector -> critic2 [label="All states
++ All actions" color="#6A1B9A" fontcolor="#6A1B9A" penwidth=2.5 style=dashed]
+	actions_collector -> critic3 [label="All states
++ All actions" color="#6A1B9A" fontcolor="#6A1B9A" penwidth=2.5 style=dashed]
+	actions_collector -> critic4 [label="All states
++ All actions" color="#6A1B9A" fontcolor="#6A1B9A" penwidth=2.5 style=dashed]
+	critic1 -> q1 [label="TD-Learning" color="#D84315" fontcolor="#D84315" penwidth=2]
+	critic2 -> q2 [label="TD-Learning" color="#D84315" fontcolor="#D84315" penwidth=2]
+	critic3 -> q3 [label="TD-Learning" color="#D84315" fontcolor="#D84315" penwidth=2]
+	critic4 -> q4 [label="TD-Learning" color="#D84315" fontcolor="#D84315" penwidth=2]
+	note_train [label="📌 نکته کلیدی:
+• هر Critic به تمام states و actions دسترسی دارد
+• یادگیری متمرکز → حل مشکل Non-Stationarity
+• اطلاعات کامل محیط → ارزیابی دقیق‌تر Q-values" fillcolor="#FFF9C4" fontcolor="#F57F17" fontsize=11 margin=0.4 shape=note style=filled]
+}
